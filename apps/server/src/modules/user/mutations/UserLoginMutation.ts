@@ -4,6 +4,7 @@ import { mutationWithClientMutationId, toGlobalId } from 'graphql-relay';
 import { User } from '../UserModel';
 import { errorField } from '@entria/graphql-mongo-helpers';
 import { comparePassword } from '../../auth/crypt';
+import { generateToken } from '../../auth/jwt';
 
 export type UserLoginInput = {
     email: string;
@@ -20,35 +21,27 @@ const mutation = mutationWithClientMutationId({
             type: new GraphQLNonNull(GraphQLString),
         }
     },
-    mutateAndGetPayload: async (args: UserLoginInput) => {
+    mutateAndGetPayload: async (args: UserLoginInput, context) => {
         const user = await User.findOne({
             email: args.email
         })
 
         if (!user) {
-            return {
-                token: null,
-                error: "User not found."
-            }
+            throw new Error("User not found.")
         }
 
-        if (!comparePassword(args.password, user.password)) {
-            return {
-                token: null,
-                error: "Invalid password."
-            }
+        if (!await comparePassword(args.password, user.password)) {
+            throw new Error("Invalid password.")
         }
 
         return {
-            token: "aaa",
-            error: null,
+            token: generateToken(user.id),
         }
     },
     outputFields: {
         token: {
             type: GraphQLString
-        },
-        ...errorField
+        }
     },
 });
 

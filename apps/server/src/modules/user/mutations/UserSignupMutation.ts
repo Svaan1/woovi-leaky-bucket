@@ -2,8 +2,8 @@ import { GraphQLString, GraphQLNonNull } from 'graphql';
 import { mutationWithClientMutationId, toGlobalId } from 'graphql-relay';
 
 import { User } from '../UserModel';
-import { userField } from '../userFields';
 import { hashPassword } from '../../auth/crypt';
+import { generateToken } from '../../auth/jwt';
 
 export type UserSignupInput = {
 	email: string;
@@ -21,17 +21,24 @@ const mutation = mutationWithClientMutationId({
         }
 	},
 	mutateAndGetPayload: async (args: UserSignupInput) => {
+		const existingUser = await User.findOne({ email: args.email})
+		if (existingUser) {
+			throw new Error("Email already registered.")
+		}
+
 		const user = await new User({
             email: args.email,
-            password: hashPassword(args.password)
+            password: await hashPassword(args.password)
 		}).save();
 
 		return {
-			user: user._id.toString(),
-		};
+			token: await generateToken(user.id),
+		}
 	},
 	outputFields: {
-		...userField('user'),
+		token : {
+			type: GraphQLString
+		}
 	},
 });
 
