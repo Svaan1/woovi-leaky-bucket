@@ -7,7 +7,6 @@ import logger from 'koa-logger';
 
 import { schema } from '../schema/schema';
 import { getContext } from './getContext';
-import { createWebsocketMiddleware } from './websocketMiddleware';
 
 const app = new Koa();
 
@@ -21,11 +20,7 @@ app.use(
 	})
 );
 
-app.use(createWebsocketMiddleware());
-
 const routes = new Router();
-
-// routes.all('/graphql/ws', wsServer);
 
 routes.all(
 	'/graphql',
