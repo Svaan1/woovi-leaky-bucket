@@ -3,6 +3,7 @@ import { mutationWithClientMutationId, toGlobalId } from 'graphql-relay';
 
 import { User } from '../UserModel';
 import { errorField } from '@entria/graphql-mongo-helpers';
+import { comparePassword } from '../../auth/crypt';
 
 export type UserLoginInput = {
     email: string;
@@ -26,18 +27,21 @@ const mutation = mutationWithClientMutationId({
 
         if (!user) {
             return {
+                token: null,
                 error: "User not found."
             }
         }
 
-        if (args.password != user.password) {
+        if (!comparePassword(args.password, user.password)) {
             return {
+                token: null,
                 error: "Invalid password."
             }
         }
 
         return {
-            token: "aaa"
+            token: "aaa",
+            error: null,
         }
     },
     outputFields: {

@@ -3,6 +3,7 @@ import { mutationWithClientMutationId, toGlobalId } from 'graphql-relay';
 
 import { User } from '../UserModel';
 import { userField } from '../userFields';
+import { hashPassword } from '../../auth/crypt';
 
 export type UserSignupInput = {
 	email: string;
@@ -22,7 +23,7 @@ const mutation = mutationWithClientMutationId({
 	mutateAndGetPayload: async (args: UserSignupInput) => {
 		const user = await new User({
             email: args.email,
-            password: args.password
+            password: hashPassword(args.password)
 		}).save();
 
 		return {
