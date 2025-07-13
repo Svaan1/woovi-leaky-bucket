@@ -2,12 +2,12 @@ import { GraphQLString, GraphQLNonNull, GraphQLFloat } from "graphql";
 import { mutationWithClientMutationId, toGlobalId } from "graphql-relay";
 import { useLeakyBucket } from "../leakyBucket";
 
+const validKeys = ["valid-key", "123-456"]
+
 export type PixQueryInput = {
     pixKey: string;
     value: number;
 };
-
-const validKeys = ["valid-key", "123-456"]
 
 const mutation = mutationWithClientMutationId({
     name: "PixQuery",
@@ -22,14 +22,14 @@ const mutation = mutationWithClientMutationId({
         },
     },
     mutateAndGetPayload: async (args: PixQueryInput, context) => {
-        if (!context.user) {
+        if (!context?.user) {
             throw new Error("Unauthenticated");
         }
         const requestCost = 1
         const leakyBucket = await useLeakyBucket(context.user.id, requestCost)
 
         if (!leakyBucket.allowed) {
-            throw new Error('Rate limited, pleas~e wait')
+            throw new Error('Rate limited, please wait')
         }
 
         // Here i mock the pix query functionality, i could either flip a coin and error out sometimes
@@ -40,10 +40,6 @@ const mutation = mutationWithClientMutationId({
         }
 
         await leakyBucket.refundToken()
-
-        return {
-
-        }
     },
     outputFields: {},
 });
