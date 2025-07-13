@@ -65,7 +65,7 @@ interface Node {
 type Mutation {
   UserSignup(input: UserSignupInput!): UserSignupPayload
   UserLogin(input: UserLoginInput!): UserLoginPayload
-  PixQuery(input: PixQueryInput!): PixQueryPayload
+  PixTransaction(input: PixTransactionInput!): PixTransactionPayload
 }
 
 type UserSignupPayload {
@@ -90,11 +90,11 @@ input UserLoginInput {
   clientMutationId: String
 }
 
-type PixQueryPayload {
+type PixTransactionPayload {
   clientMutationId: String
 }
 
-input PixQueryInput {
+input PixTransactionInput {
   """"""
   pixKey: String!
 

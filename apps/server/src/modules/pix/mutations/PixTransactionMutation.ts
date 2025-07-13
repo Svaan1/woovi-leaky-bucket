@@ -4,13 +4,13 @@ import { leakTokens, refundTokens } from "../leakyBucket";
 
 const validKeys = ["valid-key", "123-456"]
 
-export type PixQueryInput = {
+export type PixTransactionInput = {
     pixKey: string;
     value: number;
 };
 
 const mutation = mutationWithClientMutationId({
-    name: "PixQuery",
+    name: "PixTransaction",
     inputFields: {
         pixKey: {
             type: new GraphQLNonNull(GraphQLString),
@@ -21,7 +21,7 @@ const mutation = mutationWithClientMutationId({
             description: "",
         },
     },
-    mutateAndGetPayload: async (args: PixQueryInput, context) => {
+    mutateAndGetPayload: async (args: PixTransactionInput, context) => {
         if (!context?.user) {
             throw new Error("Unauthenticated");
         }
@@ -44,6 +44,6 @@ const mutation = mutationWithClientMutationId({
     outputFields: {},
 });
 
-export const PixQueryMutation = {
+export const PixTransactionMutation = {
     ...mutation,
 };

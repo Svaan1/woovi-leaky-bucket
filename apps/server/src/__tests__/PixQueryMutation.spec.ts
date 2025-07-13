@@ -4,11 +4,11 @@ import { schema } from '../schema/schema';
 import { redis } from '../redis';
 import { toGlobalId } from 'graphql-relay';
 
-jest.mock('../server/redis');
+jest.mock('../redis');
 
 const mockedRedis = redis as jest.Mocked<typeof redis>;
 
-describe('PixQueryMutation with Leaky Bucket', () => {
+describe('PixTransactionMutation with Leaky Bucket', () => {
   let redisStore: { [key: string]: { tokens: string; lastFillTime: string } } = {};
   const userId = '1';
   const contextValue = {
@@ -19,8 +19,8 @@ describe('PixQueryMutation with Leaky Bucket', () => {
 
   const executeMutation = (pixKey: string) => {
     const source = `
-      mutation PixQuery($input: PixQueryInput!) {
-        PixQuery(input: $input) {
+      mutation PixTransaction($input: PixTransactionInput!) {
+        PixTransaction(input: $input) {
           clientMutationId
         }
       }

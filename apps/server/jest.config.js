@@ -1,21 +1,21 @@
 const pack = require('./package.json');
 
 const jestTransformer = () => {
-  if (process.env.JEST_TRANSFORMER === 'babel-barrel') {
+  if (process.env.JEST_TRANSFORMER === 'babel-jest') {
     // eslint-disable-next-line
-    console.log('babel-barrel');
+    console.log('babel-jest');
 
     return {
-      '^.+\\.(js|ts|tsx)?$': require.resolve('./babelBarrel'),
-    }
+      '^.+\\.(js|ts|tsx)?$': 'babel-jest',
+    };
   }
 
   // eslint-disable-next-line
-  console.log('babel-jest');
+  console.log('babel-barrel');
 
   return {
-    '^.+\\.(js|ts|tsx)?$': 'babel-jest',
-  };
+    '^.+\\.(js|ts|tsx)?$': require.resolve('./babelBarrel'),
+  }
 };
 
 module.exports = {

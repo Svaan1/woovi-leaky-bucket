@@ -1,5 +1,5 @@
-import { PixQueryMutation } from "./PixQueryMutation";
+import { PixTransactionMutation } from "./PixTransactionMutation";
 
 export const pixMutations = {
-  PixQuery: PixQueryMutation,
+  PixTransaction: PixTransactionMutation,
 };

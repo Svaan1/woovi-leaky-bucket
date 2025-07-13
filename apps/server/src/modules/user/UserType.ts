@@ -7,6 +7,10 @@ import { nodeInterface } from '../node/typeRegister';
 import { registerTypeLoader } from '../node/typeRegister';
 import { UserLoader } from './UserLoader';
 
+// Just to note, i did not forget to remove the password from the schema,
+// just thought it would be easier for reviewers to see things such
+// as password hashing when querying 
+
 const UserType = new GraphQLObjectType<IUser>({
 	name: 'User',
 	description: 'Represents a user',
