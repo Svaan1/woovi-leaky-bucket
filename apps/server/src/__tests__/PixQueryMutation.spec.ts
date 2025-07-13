@@ -1,14 +1,15 @@
+import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { graphql } from 'graphql';
 import { schema } from '../schema/schema';
-import { redis } from '../server/redisClient';
+import { redis } from '../redis';
 import { toGlobalId } from 'graphql-relay';
 
-jest.mock('../server/redisClient');
+jest.mock('../server/redis');
 
 const mockedRedis = redis as jest.Mocked<typeof redis>;
 
 describe('PixQueryMutation with Leaky Bucket', () => {
-  let redisStore: { [key: string]: string } = {};
+  let redisStore: { [key: string]: { tokens: string; lastFillTime: string } } = {};
   const userId = '1';
   const contextValue = {
     user: {
@@ -37,10 +38,14 @@ describe('PixQueryMutation with Leaky Bucket', () => {
   beforeEach(() => {
     // Reset redis store and mock functions before each test
     redisStore = {};
-    mockedRedis.get.mockImplementation((key: string | Buffer) => Promise.resolve(redisStore[key.toString()]));
-    mockedRedis.set.mockImplementation((key: string | Buffer, value: string | number | Buffer) => {
-      redisStore[key.toString()] = value.toString();
-      return Promise.resolve('OK');
+    mockedRedis.hgetall.mockImplementation((key: string | Buffer) => Promise.resolve(redisStore[key.toString()]));
+    mockedRedis.hset.mockImplementation((key: string | Buffer, value: any) => {
+      const keyStr = key.toString();
+      if (!redisStore[keyStr]) {
+        redisStore[keyStr] = { tokens: '', lastFillTime: '' };
+      }
+      Object.assign(redisStore[keyStr], value);
+      return Promise.resolve(1);
     });
     jest.useFakeTimers();
   });
@@ -54,8 +59,8 @@ describe('PixQueryMutation with Leaky Bucket', () => {
     expect(result.errors).toBeUndefined();
 
     const bucketKey = `bucket:${contextValue.user.id}`;
-    const bucketData = JSON.parse(redisStore[bucketKey]);
-    expect(bucketData.numberOfTokens).toBe(10);
+    const bucketData = redisStore[bucketKey];
+    expect(parseInt(bucketData.tokens, 10)).toBe(10);
   });
 
   it('should consume one token on a failed request', async () => {
@@ -64,8 +69,8 @@ describe('PixQueryMutation with Leaky Bucket', () => {
     expect(result.errors?.[0].message).toBe('Invalid key');
 
     const bucketKey = `bucket:${contextValue.user.id}`;
-    const bucketData = JSON.parse(redisStore[bucketKey]);
-    expect(bucketData.numberOfTokens).toBe(9);
+    const bucketData = redisStore[bucketKey];
+    expect(parseInt(bucketData.tokens, 10)).toBe(9);
   });
 
   it('should be rate-limited after 10 failed requests', async () => {
@@ -74,8 +79,8 @@ describe('PixQueryMutation with Leaky Bucket', () => {
     }
 
     const bucketKey = `bucket:${contextValue.user.id}`;
-    const bucketData = JSON.parse(redisStore[bucketKey]);
-    expect(bucketData.numberOfTokens).toBe(0);
+    const bucketData = redisStore[bucketKey];
+    expect(parseInt(bucketData.tokens, 10)).toBe(0);
 
     const result = await executeMutation('invalid-key');
     expect(result.errors).toBeDefined();
@@ -97,8 +102,8 @@ describe('PixQueryMutation with Leaky Bucket', () => {
     expect(result.errors?.[0].message).toBe('Invalid key');
 
     const bucketKey = `bucket:${contextValue.user.id}`;
-    const bucketData = JSON.parse(redisStore[bucketKey]);
-    expect(bucketData.numberOfTokens).toBe(0);
+    const bucketData = redisStore[bucketKey];
+    expect(parseInt(bucketData.tokens, 10)).toBe(0);
   });
 
   it('should replenish all tokens after 10 hours', async () => {
@@ -106,7 +111,6 @@ describe('PixQueryMutation with Leaky Bucket', () => {
         await executeMutation('invalid-key');
     }
 
-    // Advance time by 10 hours
     jest.advanceTimersByTime(1000 * 60 * 60 * 10);
 
     for (let i = 0; i < 10; i++) {
@@ -115,8 +119,8 @@ describe('PixQueryMutation with Leaky Bucket', () => {
     }
 
     const bucketKey = `bucket:${contextValue.user.id}`;
-    const bucketData = JSON.parse(redisStore[bucketKey]);
-    expect(bucketData.numberOfTokens).toBe(0);
+    const bucketData = redisStore[bucketKey];
+    expect(parseInt(bucketData.tokens, 10)).toBe(0);
 
     const result = await executeMutation('invalid-key');
     expect(result.errors?.[0].message).toContain('Rate limited');

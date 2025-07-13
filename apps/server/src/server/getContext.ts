@@ -7,10 +7,10 @@ const getContext = (ctx: ParameterizedContext) => {
     const token = ctx.headers.authorization?.replace("Bearer ", "");
     const user = decodeToken(token);
 
-  return {
+    return {
         dataloaders,
         user,
-  } as const;
+    } as const;
 };
 
 export { getContext };
