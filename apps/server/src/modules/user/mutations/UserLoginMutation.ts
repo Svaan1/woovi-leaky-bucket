@@ -35,7 +35,7 @@ const mutation = mutationWithClientMutationId({
         }
 
         return {
-            token: generateToken(user.id),
+            token: generateToken({ userId: user.id }),
         }
     },
     outputFields: {

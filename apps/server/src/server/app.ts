@@ -23,11 +23,11 @@ app.use(
 const routes = new Router();
 
 routes.all(
-	'/graphql',
-	graphqlHTTP(() => ({
+    '/graphql',
+	graphqlHTTP((request, response, ctx) => ({
 		schema,
 		graphiql: true,
-		context: getContext(),
+		context: getContext(ctx),
 	}))
 );
 

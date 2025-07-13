@@ -32,7 +32,7 @@ const mutation = mutationWithClientMutationId({
 		}).save();
 
 		return {
-			token: await generateToken(user.id),
+			token: await generateToken({ userId: user.id }),
 		}
 	},
 	outputFields: {
