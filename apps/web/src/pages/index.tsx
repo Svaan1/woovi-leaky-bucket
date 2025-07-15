@@ -4,9 +4,6 @@ import { useRouter } from "next/router";
 import { 
     Search, 
     AccountBalance, 
-    Phone, 
-    Email, 
-    CreditCard, 
     CheckCircle,
     ErrorOutline
 } from "@mui/icons-material";
@@ -15,75 +12,32 @@ import {
     Button, 
     Container, 
     TextField, 
-    Theme, 
-    Typography, 
     Card, 
     CardContent,
     Chip,
     InputAdornment,
     Alert,
     Fade,
-    CircularProgress
+    CircularProgress,
+    Typography
 } from "@mui/material";
-import { SxProps } from "@mui/system";
 import { useMutation } from "react-relay";
 import { graphql } from "relay-runtime";
 
 import { useAuth } from "../auth/AuthContext";
-import { WooviIcon } from "../components/WooviIcon";
 import { pagesPixMutation as PixPixMutationType } from "../__generated__/pagesPixMutation.graphql";
+import Header from "../components/Header";
+import PageTitle from "../components/PageTitle";
 
-const styles: { [key: string]: SxProps<Theme> } = {
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        minHeight: '100vh',
-        p: 2,
-        pt: 6,
-    },
-    header: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: 2,
-        mb: 4,
-    },
-    wooviIcon: {
-        width: '120px',
-        height: 'auto',
-    },
-    headerTitle: {
-        fontFamily: 'Nunito, sans-serif',
-        fontSize: '32px',
-        fontWeight: 600,
-        color: 'text.primary',
-    },
+const styles = {
     mainCard: {
         width: '100%',
         maxWidth: '600px',
         bgcolor: 'background.paper',
         border: '1px solid',
         borderColor: 'divider',
-        borderRadius: 3,
         boxShadow: 2,
         p: 4,
-    },
-    title: {
-        fontFamily: 'Nunito, sans-serif',
-        fontSize: '24px',
-        fontWeight: 600,
-        textAlign: 'center',
-        mb: 1,
-        color: 'text.primary',
-    },
-    subtitle: {
-        fontFamily: 'Nunito, sans-serif',
-        fontSize: '16px',
-        fontWeight: 400,
-        textAlign: 'center',
-        mb: 4,
-        color: 'text.secondary',
     },
     form: {
         display: 'flex',
@@ -94,31 +48,6 @@ const styles: { [key: string]: SxProps<Theme> } = {
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
-    },
-    pixKeyInput: {
-        '& .MuiOutlinedInput-root': {
-            borderRadius: 2,
-        },
-    },
-    valueInput: {
-        '& .MuiOutlinedInput-root': {
-            borderRadius: 2,
-        },
-    },
-    button: {
-        fontFamily: 'Nunito, sans-serif',
-        fontWeight: 600,
-        textTransform: 'inherit',
-        backgroundColor: 'rgb(3, 214, 157)',
-        borderRadius: 2,
-        py: 1.5,
-        fontSize: '16px',
-        '&:hover': {
-            backgroundColor: 'rgb(2, 179, 131)',
-        },
-        '&:disabled': {
-            backgroundColor: 'rgba(3, 214, 157, 0.5)',
-        },
     },
     resultCard: {
         mt: 3,
@@ -233,20 +162,23 @@ const Index = () => {
     };
 
     return (
-        <Container sx={styles.container}>
-            <Box sx={styles.header}>
-                <WooviIcon sx={styles.wooviIcon} />
-            </Box>
+        <Container sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            minHeight: '100vh',
+            p: 2,
+            pt: 6,
+        }}>
+            <Header />
 
             <Card sx={styles.mainCard}>
                 <CardContent>
-                    <Typography sx={styles.title}>
-                        Consultar Chave PIX
-                    </Typography>
-                    
-                    <Typography sx={styles.subtitle}>
-                        Digite a chave PIX e o valor para simular uma transação
-                    </Typography>
+                    <PageTitle 
+                        title="Consultar Chave PIX"
+                        subtitle="Digite a chave PIX e o valor para simular uma transação"
+                    />
 
                     <Box component="form" onSubmit={handleSubmit} sx={styles.form}>
                         <Box sx={styles.inputSection}>
@@ -256,7 +188,6 @@ const Index = () => {
                                 fullWidth
                                 value={pixKey}
                                 onChange={(e) => setPixKey(e.target.value)}
-                                sx={styles.pixKeyInput}
                                 InputProps={{
                                     startAdornment: (
                                         <InputAdornment position="start">
@@ -274,7 +205,6 @@ const Index = () => {
                                 fullWidth
                                 value={value}
                                 onChange={(e) => setValue(e.target.value)}
-                                sx={styles.valueInput}
                                 InputProps={{
                                     startAdornment: (
                                         <InputAdornment position="start">
@@ -293,9 +223,8 @@ const Index = () => {
                         <Button
                             variant="contained"
                             fullWidth
-                            sx={styles.button}
                             type="submit"
-                            disabled={!pixKey || !value || isMutationInFlight || isMutationInFlight}
+                            disabled={!pixKey || !value || isMutationInFlight}
                         >
                             {isMutationInFlight ? (
                                 <>

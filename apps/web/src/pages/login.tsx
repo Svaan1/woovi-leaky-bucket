@@ -2,82 +2,14 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 
 import { ArrowForward } from "@mui/icons-material";
-import { Box, Button, Container, Link, TextField, Theme, Typography } from "@mui/material";
-import { SxProps } from "@mui/system";
+import { Box, Button, Container, Link, TextField, Typography } from "@mui/material";
 import { useMutation } from "react-relay";
 import { graphql } from "relay-runtime";
 
 import { useAuth } from "../auth/AuthContext";
 import EmailField from "../components/EmailField";
-import { WooviIcon } from "../components/WooviIcon";
 import { loginMutation as LoginMutationType } from "../__generated__/loginMutation.graphql";
-
-const styles: { [key: string]: SxProps<Theme> } = {
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-        p: 2,
-    },
-    wooviIcon: {
-        width: '140px',
-        height: 'auto',
-        mb: 4,
-    },
-    box: {
-        width: '100%',
-        maxWidth: '485px',
-        color: 'text.primary',
-        bgcolor: 'background.paper',
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRadius: 2,
-        boxShadow: 1,
-        p: 4,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 2,
-    },
-    title: {
-        fontFamily: 'Nunito, sans-serif',
-        fontSize: '27px',
-        fontWeight: 500,
-        textAlign: 'center',
-        mb: 3,
-    },
-    form: {
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-    },
-    button: {
-        fontFamily: 'Nunito, sans-serif',
-        fontWeight: 500,
-        textTransform: 'inherit',
-        backgroundColor: 'rgb(3, 214, 157)',
-        '&:hover': {
-            backgroundColor: 'rgb(2, 179, 131)',
-        },
-    },
-    arrowForward: {
-        ml: 1,
-    },
-    registerBox: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        mt: 4,
-        gap: 1,
-    },
-    registerLink: {
-        color: 'rgb(3, 214, 157)',
-        textDecoration: 'none',
-    },
-};
+import Header from "../components/Header";
 
 const Login = () => {
     const LoginMutation = graphql`
@@ -98,10 +30,10 @@ const Login = () => {
     const { login } = useAuth();
     const router = useRouter();
     
-    function handleSubmit(e) {
+    function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
 
-        const data = commitMutation({
+        commitMutation({
             variables: {
                 email: email,
                 password: password
@@ -141,13 +73,34 @@ const Login = () => {
     }
 
     return <>
-        <Container sx={styles.container}>
+        <Container sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100vh',
+            p: 2,
+        }}>
 
-            <WooviIcon sx={styles.wooviIcon}/>
+            <Header />
 
-            <Box sx={styles.box}>
+            <Box sx={{
+                width: '100%',
+                maxWidth: '485px',
+                color: 'text.primary',
+                bgcolor: 'background.paper',
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                boxShadow: 1,
+                p: 4,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 2,
+            }}>
 
-                <Typography sx={styles.title}>
+                <Typography variant="h2" textAlign="center" mb={3}>
                     Login
                 </Typography>
 
@@ -157,7 +110,12 @@ const Login = () => {
                     </Typography>
                 )}
 
-                <Box component="form" onSubmit={handleSubmit} sx={styles.form}>
+                <Box component="form" onSubmit={handleSubmit} sx={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                }}>
                     <EmailField
                         email={email}
                         setEmail={setEmail}
@@ -174,20 +132,28 @@ const Login = () => {
                     <Button
                         variant="contained"
                         fullWidth
-                        sx={styles.button}
                         type="submit"
                         disabled={!isEmailValid || isMutationInFlight}
                     >
                         Continuar
-                        <ArrowForward sx={styles.arrowForward}/>
+                        <ArrowForward sx={{ ml: 1 }}/>
                     </Button>
                 </Box>
             </Box>
-            <Box sx={styles.registerBox}>
+            <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                mt: 4,
+                gap: 1,
+            }}>
                 <Typography variant="body2">
                     Novo na Woovi?
                 </Typography>
-                <Link href="/register" sx={styles.registerLink}>
+                <Link href="/register" sx={{
+                    color: 'primary.main',
+                    textDecoration: 'none',
+                }}>
                     <Typography variant="body2">
                         Clique aqui pra se cadastrar
                     </Typography>
