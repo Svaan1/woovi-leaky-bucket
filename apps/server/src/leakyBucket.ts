@@ -40,6 +40,8 @@ export class LeakyBucketService {
                 bucket = await this.createBucket()
             }
 
+            console.log(bucket)
+
             const currentTimestamp = Date.now();
             const elapsedTimeMs = currentTimestamp - bucket.lastFillTime;
             const tokensToRefill = Math.floor(elapsedTimeMs / this.config.fillIntervalMs);

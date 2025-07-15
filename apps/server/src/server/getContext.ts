@@ -2,6 +2,7 @@ import { ParameterizedContext } from "koa";
 import { getDataloaders } from "../modules/loader/loaderRegister";
 import { decodeToken } from "../modules/auth/jwt";
 import { LeakyBucketService } from "../leakyBucket";
+import { fromGlobalId } from "graphql-relay";
 
 const getContext = (ctx: ParameterizedContext) => {
     const dataloaders = getDataloaders();
@@ -9,11 +10,13 @@ const getContext = (ctx: ParameterizedContext) => {
     const token = ctx.headers.authorization?.replace("Bearer ", "");
     const user = decodeToken(token);
 
-    const leakyBucket = user ? new LeakyBucketService(user.id, {
-        fillIntervalMs: 1000 * 60 * 60,
+    const config = {
         maxTokens: 10,
-        bucketTtlSeconds: 60 * 60,
-    }) : null
+        fillIntervalMs: 1000 * 60 * 60, // 1 hour
+        bucketTtlSeconds: 60 * 60 * 24 * 7, // 1 week
+    };
+
+    const leakyBucket = user ? new LeakyBucketService(fromGlobalId(user.id).id, config) : null
 
     return {
         dataloaders,
