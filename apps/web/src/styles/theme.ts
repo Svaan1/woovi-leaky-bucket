@@ -28,44 +28,6 @@ const theme = createTheme({
         fontWeight: 400,
     },
   },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'inherit',
-          borderRadius: 8,
-          paddingTop: 12,
-          paddingBottom: 12,
-          fontSize: '16px',
-          fontWeight: 600,
-        },
-        containedPrimary: {
-            '&:hover': {
-                backgroundColor: 'rgb(2, 179, 131)',
-            },
-            '&:disabled': {
-                backgroundColor: 'rgba(3, 214, 157, 0.5)',
-            },
-        }
-      },
-    },
-    MuiTextField: {
-        styleOverrides: {
-            root: {
-                '& .MuiOutlinedInput-root': {
-                    borderRadius: 8,
-                },
-            },
-        },
-    },
-    MuiCard: {
-        styleOverrides: {
-            root: {
-                borderRadius: 12,
-            }
-        }
-    }
-  },
 });
 
 export default theme;

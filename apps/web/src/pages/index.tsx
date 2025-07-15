@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useRouter } from "next/router";
+import { graphql } from "relay-runtime";
+import { useMutation } from "react-relay";
 
 import { 
     Search, 
@@ -9,9 +10,6 @@ import {
 } from "@mui/icons-material";
 import { 
     Box, 
-    Button, 
-    Container, 
-    TextField, 
     Card, 
     CardContent,
     Chip,
@@ -21,73 +19,12 @@ import {
     CircularProgress,
     Typography
 } from "@mui/material";
-import { useMutation } from "react-relay";
-import { graphql } from "relay-runtime";
 
-import { useAuth } from "../auth/AuthContext";
+
+import { Header, PageTitle } from "../components";
+import { StyledButton, StyledContainer, StyledTextField } from "@woovi-playground/ui";
+
 import { pagesPixMutation as PixPixMutationType } from "../__generated__/pagesPixMutation.graphql";
-import Header from "../components/Header";
-import PageTitle from "../components/PageTitle";
-
-const styles = {
-    mainCard: {
-        width: '100%',
-        maxWidth: '600px',
-        bgcolor: 'background.paper',
-        border: '1px solid',
-        borderColor: 'divider',
-        boxShadow: 2,
-        p: 4,
-    },
-    form: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 3,
-    },
-    inputSection: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-    },
-    resultCard: {
-        mt: 3,
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRadius: 2,
-        overflow: 'hidden',
-    },
-    resultHeader: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: 2,
-        p: 2,
-        bgcolor: 'rgba(3, 214, 157, 0.1)',
-    },
-    resultContent: {
-        p: 2,
-    },
-    pixTypeChip: {
-        fontFamily: 'Nunito, sans-serif',
-        fontWeight: 500,
-        bgcolor: 'rgb(3, 214, 157)',
-        color: 'white',
-        '& .MuiChip-icon': {
-            color: 'white',
-        },
-    },
-    userInfo: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 1,
-        mt: 2,
-    },
-    loadingContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        py: 4,
-    },
-};
 
 const Index = () => {
     const PixMutation = graphql`
@@ -107,14 +44,6 @@ const Index = () => {
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
     const [commitMutation, isMutationInFlight] = useMutation<PixPixMutationType>(PixMutation);
-
-    const { token } = useAuth();
-    const router = useRouter();
-
-    if (!token) {
-        router.push('/login');
-        return null;
-    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -162,83 +91,84 @@ const Index = () => {
     };
 
     return (
-        <Container sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            minHeight: '100vh',
-            p: 2,
-            pt: 6,
-        }}>
+        <StyledContainer>
             <Header />
 
-            <Card sx={styles.mainCard}>
-                <CardContent>
+            <Box
+                component="form"
+                onSubmit={handleSubmit}
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 3,
+                    width: '100%',
+                    maxWidth: '600px',
+                    bgcolor: 'background.paper',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    boxShadow: 2,
+                    p: 4,
+            }}>
                     <PageTitle 
                         title="Consultar Chave PIX"
                         subtitle="Digite a chave PIX e o valor para simular uma transação"
                     />
 
-                    <Box component="form" onSubmit={handleSubmit} sx={styles.form}>
-                        <Box sx={styles.inputSection}>
-                            <TextField
-                                label="Chave PIX"
-                                placeholder="E-mail, telefone, CPF ou chave aleatória"
-                                fullWidth
-                                value={pixKey}
-                                onChange={(e) => setPixKey(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <AccountBalance color="action" />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                                required
-                            />
-                            
-                            <TextField
-                                label="Valor"
-                                type="number"
-                                placeholder="0,00"
-                                fullWidth
-                                value={value}
-                                onChange={(e) => setValue(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            R$
-                                        </InputAdornment>
-                                    ),
-                                }}
-                                inputProps={{
-                                    step: "0.01",
-                                    min: "0.01"
-                                }}
-                                required
-                            />
-                        </Box>
+                    <StyledTextField
+                        label="Chave PIX"
+                        placeholder="E-mail, telefone, CPF ou chave aleatória"
+                        fullWidth
+                        value={pixKey}
+                        onChange={(e) => setPixKey(e.target.value)}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <AccountBalance color="action" />
+                                </InputAdornment>
+                            ),
+                        }}
+                        required
+                    />
+                    
+                    <StyledTextField
+                        label="Valor"
+                        type="number"
+                        placeholder="0,00"
+                        fullWidth
+                        value={value}
+                        onChange={(e) => setValue(e.target.value)}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    R$
+                                </InputAdornment>
+                            ),
+                        }}
+                        inputProps={{
+                            step: "0.01",
+                            min: "0.01"
+                        }}
+                        required
+                    />
 
-                        <Button
-                            variant="contained"
-                            fullWidth
-                            type="submit"
-                            disabled={!pixKey || !value || isMutationInFlight}
-                        >
-                            {isMutationInFlight ? (
-                                <>
-                                    <CircularProgress size={20} sx={{ mr: 1, color: 'white' }} />
-                                    Consultando...
-                                </>
-                            ) : (
-                                <>
-                                    <Search sx={{ mr: 1 }} />
-                                    Consultar PIX
-                                </>
-                            )}
-                        </Button>
-                    </Box>
+                    <StyledButton
+                        variant="contained"
+                        fullWidth
+                        type="submit"
+                        disabled={!pixKey || !value || isMutationInFlight}
+                    >
+                        {isMutationInFlight ? (
+                            <>
+                                <CircularProgress size={20} sx={{ mr: 1, color: 'white' }} />
+                                Consultando...
+                            </>
+                        ) : (
+                            <>
+                                <Search sx={{ mr: 1 }} />
+                                Consultar PIX
+                            </>
+                        )}
+                    </StyledButton>
 
                     {error && (
                         <Fade in>
@@ -254,8 +184,20 @@ const Index = () => {
 
                     {result && (
                         <Fade in>
-                            <Card sx={styles.resultCard}>
-                                <Box sx={styles.resultHeader}>
+                            <Card sx={{
+                                    mt: 3,
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                    borderRadius: 2,
+                                    overflow: 'hidden',
+                            }}>
+                                <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 2,
+                                        p: 2,
+                                        bgcolor: 'rgba(3, 214, 157, 0.1)',
+                                }}>
                                     <CheckCircle sx={{ color: 'rgb(3, 214, 157)' }} />
                                     <Typography variant="h6" sx={{ fontFamily: 'Nunito, sans-serif', fontWeight: 600 }}>
                                         Chave PIX Encontrada
@@ -264,12 +206,23 @@ const Index = () => {
                                         icon={<AccountBalance />}
                                         label="Chave Aleatória"
                                         size="small"
-                                        sx={styles.pixTypeChip}
+                                        sx={{
+                                            bgcolor: 'rgb(3, 214, 157)',
+                                            color: 'white',
+                                            '& .MuiChip-icon': {
+                                                color: 'white',
+                                            },
+                                        }}
                                     />
                                 </Box>
                                 
-                                <CardContent sx={styles.resultContent}>
-                                    <Box sx={styles.userInfo}>
+                                <CardContent sx={{ p: 2}}>
+                                        <Box sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: 1,
+                                            mt: 2,
+                                        }}>
                                         <Typography variant="body1" sx={{ fontWeight: 600 }}>
                                             <strong>Destinatário:</strong> {result.name}
                                         </Typography>
@@ -281,9 +234,8 @@ const Index = () => {
                             </Card>
                         </Fade>
                     )}
-                </CardContent>
-            </Card>
-        </Container>
+            </Box>
+        </StyledContainer>
     );
 };
 

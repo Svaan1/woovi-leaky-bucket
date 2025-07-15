@@ -1,16 +1,15 @@
 import { useState } from "react";
-import { useRouter } from "next/router";
-
-import { ArrowForward } from "@mui/icons-material";
-import { Box, Button, Container, Link, TextField, Typography } from "@mui/material";
 import { useMutation } from "react-relay";
 import { graphql } from "relay-runtime";
+import { parseError } from "../relay/utils";
 
-import { useAuth } from "../auth/AuthContext";
-import EmailField from "../components/EmailField";
+import { ArrowForward } from "@mui/icons-material";
+import { Box, Link, Typography } from "@mui/material";
+
+import { EmailField, Header, FormBox, PageTitle} from "../components";
+import { StyledButton, StyledContainer, StyledTextField, StyledLink } from "@woovi-playground/ui";
+
 import { registerMutation as RegisterMutationType } from "../__generated__/registerMutation.graphql";
-import Header from "../components/Header";
-import PageTitle from "../components/PageTitle";
 
 const Register = () => {
     const RegisterMutation = graphql`
@@ -30,9 +29,6 @@ const Register = () => {
     
     const [commitMutation, isMutationInFlight] = useMutation<RegisterMutationType>(RegisterMutation);
     
-    const { login } = useAuth();
-    const router = useRouter();
-    
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
 
@@ -44,6 +40,7 @@ const Register = () => {
 
             onCompleted: (response, errors) => {
                 setError(null);
+            
                 if (errors) {
                     const errorMessage = errors.map(e => e.message).join(', ');
                     setError(errorMessage);
@@ -51,55 +48,22 @@ const Register = () => {
                 }
 
                 if (response.UserSignup?.token) {
-                    login(response.UserSignup.token);
-                    router.push('/');
                 }
             },
 
             onError: (error) => {
-                try {
-                    const message = error.message;
-                    const jsonString = message.substring(message.indexOf('['));
-                    const errors = JSON.parse(jsonString);
-                    if (Array.isArray(errors) && errors.length > 0 && errors[0].message) {
-                        setError(errors[0].message);
-                    } else {
-                        setError("An unknown error occurred.");
-                    }
-                } catch (e) {
-                    setError(error.message);
-                }
+                setError(parseError(error))
             }
         })
 
     }
 
     return <>
-        <Container sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100vh',
-            p: 2,
-        }}>
+        <StyledContainer>
 
             <Header />
 
-            <Box sx={{
-                width: '100%',
-                maxWidth: '485px',
-                color: 'text.primary',
-                bgcolor: 'background.paper',
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 2,
-                boxShadow: 1,
-                p: 4,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-            }}>
+            <FormBox onSubmit={handleSubmit}>
 
                 <PageTitle 
                     title="Crie sua Conta"
@@ -112,36 +76,30 @@ const Register = () => {
                     </Typography>
                 )}
 
-                <Box component="form" onSubmit={handleSubmit} sx={{
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 2,
-                }}>
-                    <EmailField
-                        email={email}
-                        setEmail={setEmail}
-                        isEmailValid={isEmailValid}
-                        setIsEmailValid={setIsEmailValid}
-                    />
-                    <TextField
-                        label="Senha"
-                        type="password"
-                        fullWidth
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <Button
-                        variant="contained"
-                        fullWidth
-                        type="submit"
-                        disabled={!isEmailValid || isMutationInFlight}
-                    >
-                        Continuar
-                        <ArrowForward sx={{ ml: 1 }}/>
-                    </Button>
-                </Box>
-            </Box>
+                <EmailField
+                    email={email}
+                    setEmail={setEmail}
+                    isEmailValid={isEmailValid}
+                    setIsEmailValid={setIsEmailValid}
+                />
+                <StyledTextField
+                    label="Senha"
+                    type="password"
+                    fullWidth
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+                <StyledButton
+                    variant="contained"
+                    fullWidth
+                    type="submit"
+                    disabled={!isEmailValid || isMutationInFlight}
+                >
+                    Continuar
+                    <ArrowForward sx={{ ml: 1 }}/>
+                </StyledButton>
+            </FormBox>
+
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -152,16 +110,13 @@ const Register = () => {
                 <Typography variant="body2">
                     Já tem uma conta?
                 </Typography>
-                <Link href="/login" sx={{
-                    color: 'primary.main',
-                    textDecoration: 'none',
-                }}>
+                <StyledLink>
                     <Typography variant="body2">
                         Clique aqui para fazer login
                     </Typography>
-                </Link>
+                </StyledLink>
             </Box>
-        </Container>
+        </StyledContainer>
     </>
 }
 

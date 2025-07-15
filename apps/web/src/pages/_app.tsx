@@ -6,16 +6,13 @@ import theme from '../styles/theme';
 import '../styles/index.css';
 
 import { ReactRelayContainer } from '../relay/ReactRelayContainer';
-import { AuthProvider } from '../auth/AuthContext';
 
 export default function App({ Component, pageProps }: AppProps) {
 	return (
 		<Suspense fallback="loading">
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
-				<AuthProvider>
-					<ReactRelayContainer Component={Component} props={pageProps} />
-				</AuthProvider>
+				<ReactRelayContainer Component={Component} props={pageProps} />
 			</ThemeProvider>
 		</Suspense>
 	);

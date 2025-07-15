@@ -1,5 +1,7 @@
-import { TextField, SxProps, Theme } from '@mui/material';
 import React from 'react';
+
+import { SxProps, Theme } from '@mui/material';
+import { StyledTextField } from '@woovi-playground/ui';
 
 const emailInputSx = (isEmailValid: boolean): SxProps<Theme> => ({
     '& .MuiOutlinedInput-root': {
@@ -21,7 +23,7 @@ interface EmailFieldProps {
     setIsEmailValid: (isValid: boolean) => void;
 }
 
-const EmailField: React.FC<EmailFieldProps> = ({ email, setEmail, isEmailValid, setIsEmailValid }) => {
+export const EmailField: React.FC<EmailFieldProps> = ({ email, setEmail, isEmailValid, setIsEmailValid }) => {
     const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newEmail = event.target.value;
         setEmail(newEmail);
@@ -29,7 +31,7 @@ const EmailField: React.FC<EmailFieldProps> = ({ email, setEmail, isEmailValid, 
     };
 
     return (
-        <TextField
+        <StyledTextField
             label="Email"
             type="email"
             fullWidth
@@ -39,5 +41,3 @@ const EmailField: React.FC<EmailFieldProps> = ({ email, setEmail, isEmailValid, 
         />
     );
 };
-
-export default EmailField;

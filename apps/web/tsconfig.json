@@ -5,6 +5,6 @@
 		"**/*.ts",
 		"**/*.tsx",
 		"../../packages/ui/src/Logo.tsx"
-	],
+, "../../packages/ui/src/StyledContainer.tsx"	],
 	"exclude": ["node_modules"]
 }
