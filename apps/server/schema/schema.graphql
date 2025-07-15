@@ -91,14 +91,19 @@ input UserLoginInput {
 }
 
 type PixTransactionPayload {
+  """Name of the owner of the Pix Key"""
+  name: String
+
+  """Name of the bank associated with the Pix Key"""
+  bank: String
   clientMutationId: String
 }
 
 input PixTransactionInput {
-  """"""
+  """The PIX key for the transaction."""
   pixKey: String!
 
-  """"""
+  """The value of the PIX transaction."""
   value: Float!
   clientMutationId: String
 }

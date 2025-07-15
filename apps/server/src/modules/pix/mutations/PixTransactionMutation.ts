@@ -1,8 +1,14 @@
-import { GraphQLString, GraphQLNonNull, GraphQLFloat } from "graphql";
+import { GraphQLString, GraphQLNonNull, GraphQLFloat, GraphQLEnumType } from "graphql";
 import { mutationWithClientMutationId } from "graphql-relay";
 
-const VALID_PIX_KEYS = ["valid-key", "123-456"];
 const REQUEST_COST = 1;
+
+const VALID_PIX_KEYS = {
+    "valid-key": {
+        name: "Paulo Ricardo",
+        bank: "Nubank",
+    }
+};
 
 export type PixTransactionInput = {
     pixKey: string;
@@ -31,16 +37,27 @@ const mutation = mutationWithClientMutationId({
             throw new Error('Rate limited, please wait.');
         }
 
-        const isKeyValid = VALID_PIX_KEYS.includes(args.pixKey);
-        if (!isKeyValid) {
+        const pixKey = VALID_PIX_KEYS[args.pixKey];
+        if (!pixKey) {
             throw new Error("Invalid key");
         }
 
         await leakyBucket.refundTokens(REQUEST_COST);
 
-        return {};
+        return {
+            ...pixKey
+        };
     },
-    outputFields: {},
+    outputFields: {
+        name: {
+            type: GraphQLString,
+            description: "Name of the owner of the Pix Key"
+        },
+        bank: {
+            type: GraphQLString,
+            description: "Name of the bank associated with the Pix Key"
+        }
+    },
 });
 
 export const PixTransactionMutation = {

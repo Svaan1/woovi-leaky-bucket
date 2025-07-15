@@ -33,7 +33,14 @@ function createNetwork() {
 			}
 		}
 
-		return networkFetch(operation, variables);
+		const headers: { Authorization?: string } = {};
+		const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+		if (token) {
+			headers.Authorization = `Bearer ${token}`;
+		}
+
+		return networkFetch(operation, variables, headers);
 	}
 
 	const network = Network.create(fetchResponse, subscribe);
