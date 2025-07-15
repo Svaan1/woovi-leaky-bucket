@@ -1,6 +1,5 @@
 import { GraphQLString, GraphQLNonNull, GraphQLFloat } from "graphql";
 import { mutationWithClientMutationId, toGlobalId } from "graphql-relay";
-import { leakTokens, refundTokens } from "../leakyBucket";
 
 const validKeys = ["valid-key", "123-456"]
 
@@ -27,7 +26,7 @@ const mutation = mutationWithClientMutationId({
         }
 
         const requestCost = 1;
-        const allowed = await leakTokens(context.user.id, requestCost)
+        const allowed = await context.leakyBucket.leakTokens(requestCost)
 
         if (!allowed) {
             throw new Error('Rate limited, please wait')
@@ -39,7 +38,7 @@ const mutation = mutationWithClientMutationId({
             throw new Error("Invalid key")
         }
 
-        await refundTokens(context.user.id, requestCost)
+        await context.leakyBucket.refundTokens(context.user.id, requestCost)
     },
     outputFields: {},
 });
