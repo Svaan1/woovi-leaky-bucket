@@ -1,0 +1,134 @@
+{
+	"info": {
+		"_postman_id": "abd5b981-c624-430c-9e53-6e8a1c033054",
+		"name": "woovi-leaky-bucket",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23048427"
+	},
+	"item": [
+		{
+			"name": "Mutations",
+			"item": [
+				{
+					"name": "UserLogin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UserLogin($email: String!, $password: String!) {\n  UserLogin(input: {\n    email: $email,\n    password: $password\n  }) {\n    token\n  }\n}\n",
+								"variables": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"supersecret\"\n}\n"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UserSignup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UserSignup($email: String!, $password: String!) {\n  UserSignup(input: {\n    email: $email,\n    password: $password\n  }) {\n    token\n    clientMutationId\n  }\n}\n",
+								"variables": "{\n  \"email\": \"user@examplea.com\",\n  \"password\": \"supersecret\"\n}\n"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PixTransaction",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NzQ0MDA1NmQ3ODU0MTJkMGEzN2RlNiIsImlhdCI6MTc1MjQ0OTAyOSwiZXhwIjoxNzUyNDUyNjI5fQ.04LHWQ4Zva3GCSBVfDHX11dCIlUJRUSspyHWRI_VdHA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation PixTransaction($pixKey: String!, $value: Float!) {\n  PixTransaction(input: {\n    pixKey: $pixKey,\n    value: $value\n  }) {\n    clientMutationId\n  }\n}\n",
+								"variables": "{\n  \"pixKey\": \"invalid-key\",\n  \"value\": 100.5\n}\n"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Queries",
+			"item": [
+				{
+					"name": "Users",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query Users {\n    users {\n        edges {\n            cursor\n            node {\n                id\n                email\n                password\n                createdAt\n            }\n        }\n        pageInfo {\n            hasNextPage\n            hasPreviousPage\n            startCursor\n            endCursor\n        }\n    }\n}\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
