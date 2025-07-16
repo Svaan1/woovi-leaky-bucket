@@ -1,50 +1,50 @@
-import { GraphQLString, GraphQLNonNull } from 'graphql';
-import { mutationWithClientMutationId, toGlobalId } from 'graphql-relay';
+import { GraphQLString, GraphQLNonNull } from "graphql";
+import { mutationWithClientMutationId, toGlobalId } from "graphql-relay";
 
-import { User } from '../UserModel';
-import { errorField } from '@entria/graphql-mongo-helpers';
-import { comparePassword } from '../../auth/crypt';
-import { generateToken } from '../../auth/jwt';
+import { User } from "../UserModel";
+import { errorField } from "@entria/graphql-mongo-helpers";
+import { comparePassword } from "../../auth/crypt";
+import { generateToken } from "../../auth/jwt";
 
 export type UserLoginInput = {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 };
 
 const mutation = mutationWithClientMutationId({
-    name: 'UserLogin',
-    inputFields: {
-        email: {
-            type: new GraphQLNonNull(GraphQLString),
-        },
-        password: {
-            type: new GraphQLNonNull(GraphQLString),
-        }
+  name: "UserLogin",
+  inputFields: {
+    email: {
+      type: new GraphQLNonNull(GraphQLString),
     },
-    mutateAndGetPayload: async (args: UserLoginInput, context) => {
-        const user = await User.findOne({
-            email: args.email
-        })
-
-        if (!user) {
-            throw new Error("User not found.")
-        }
-
-        if (!await comparePassword(args.password, user.password)) {
-            throw new Error("Invalid password.")
-        }
-
-        return {
-            token: generateToken({ id: user.id }),
-        }
+    password: {
+      type: new GraphQLNonNull(GraphQLString),
     },
-    outputFields: {
-        token: {
-            type: GraphQLString
-        }
+  },
+  mutateAndGetPayload: async (args: UserLoginInput, context) => {
+    const user = await User.findOne({
+      email: args.email,
+    });
+
+    if (!user) {
+      throw new Error("User not found.");
+    }
+
+    if (!(await comparePassword(args.password, user.password))) {
+      throw new Error("Invalid password.");
+    }
+
+    return {
+      token: generateToken({ id: user.id }),
+    };
+  },
+  outputFields: {
+    token: {
+      type: GraphQLString,
     },
+  },
 });
 
 export const UserLoginMutation = {
-    ...mutation,
+  ...mutation,
 };

@@ -1,3 +1,3 @@
-it('basic', () => {
-	expect(1).toBe(1);
-})
+it("basic", () => {
+  expect(1).toBe(1);
+});

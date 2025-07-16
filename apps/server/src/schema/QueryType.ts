@@ -1,9 +1,9 @@
-import { GraphQLObjectType } from 'graphql';
-import { userConnectionField } from '../modules/user/userFields';
+import { GraphQLObjectType } from "graphql";
+import { userConnectionField } from "../modules/user/userFields";
 
 export const QueryType = new GraphQLObjectType({
-	name: 'Query',
-	fields: () => ({
-		...userConnectionField('users')
-	}),
+  name: "Query",
+  fields: () => ({
+    ...userConnectionField("users"),
+  }),
 });

@@ -1,5 +1,5 @@
-export { EmailField } from "./EmailField"
-export { FormBox } from "./FormBox"
-export { Header } from "./Header"
-export { PageTitle } from "./PageTitle"
-export { WooviIcon } from "./WooviIcon"
+export { EmailField } from "./EmailField";
+export { FormBox } from "./FormBox";
+export { Header } from "./Header";
+export { PageTitle } from "./PageTitle";
+export { WooviIcon } from "./WooviIcon";

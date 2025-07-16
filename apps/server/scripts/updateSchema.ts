@@ -1,15 +1,15 @@
-import fs from 'fs/promises';
-import { printSchema } from 'graphql/utilities';
-import path from 'path';
-import { promisify } from 'util';
+import fs from "fs/promises";
+import { printSchema } from "graphql/utilities";
+import path from "path";
+import { promisify } from "util";
 
-import { schema } from '../src/schema/schema';
+import { schema } from "../src/schema/schema";
 
 (async () => {
-	await fs.writeFile(
-		path.join(__dirname, '../schema/schema.graphql'),
-		printSchema(schema)
-	);
+  await fs.writeFile(
+    path.join(__dirname, "../schema/schema.graphql"),
+    printSchema(schema),
+  );
 
-	process.exit(0);
+  process.exit(0);
 })();
