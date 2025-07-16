@@ -1,5 +1,5 @@
 import { GraphQLString, GraphQLNonNull } from "graphql";
-import { mutationWithClientMutationId, toGlobalId } from "graphql-relay";
+import { mutationWithClientMutationId } from "graphql-relay";
 
 import { User } from "../UserModel";
 import { hashPassword } from "../../auth/crypt";
@@ -32,7 +32,7 @@ const mutation = mutationWithClientMutationId({
     }).save();
 
     return {
-      token: await generateToken({ id: user.id }),
+      token: generateToken({ id: user.id }),
     };
   },
   outputFields: {

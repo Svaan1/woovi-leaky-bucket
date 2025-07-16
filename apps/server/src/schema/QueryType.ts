@@ -7,3 +7,7 @@ export const QueryType = new GraphQLObjectType({
     ...userConnectionField("users"),
   }),
 });
+
+export const QueryPermissions = {
+
+}

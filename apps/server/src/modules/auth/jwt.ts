@@ -11,5 +11,10 @@ export function generateToken(payload: UserPayload): string {
 }
 
 export function decodeToken(token?: string): UserPayload | undefined {
-  return token ? (jwt.verify(token, JWT_SECRET) as UserPayload) : undefined;
+  try {
+    return token ? (jwt.verify(token, JWT_SECRET) as UserPayload) : undefined;
+  }
+  catch {
+    return undefined;
+  }
 }

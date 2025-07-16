@@ -5,8 +5,9 @@ import { graphqlHTTP } from "koa-graphql";
 import Router from "koa-router";
 import logger from "koa-logger";
 
-import { schema } from "../schema/schema";
 import { getContext } from "./getContext";
+import { applyMiddleware } from "graphql-middleware";
+import { schema, permissions } from "../schema/schema";
 
 const app = new Koa();
 
@@ -25,7 +26,7 @@ const routes = new Router();
 routes.all(
   "/graphql",
   graphqlHTTP((request, response, ctx) => ({
-    schema,
+    schema: applyMiddleware(schema, permissions),
     graphiql: true,
     context: getContext(ctx),
   })),

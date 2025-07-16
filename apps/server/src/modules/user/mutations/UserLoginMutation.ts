@@ -1,8 +1,7 @@
 import { GraphQLString, GraphQLNonNull } from "graphql";
-import { mutationWithClientMutationId, toGlobalId } from "graphql-relay";
+import { mutationWithClientMutationId } from "graphql-relay";
 
 import { User } from "../UserModel";
-import { errorField } from "@entria/graphql-mongo-helpers";
 import { comparePassword } from "../../auth/crypt";
 import { generateToken } from "../../auth/jwt";
 

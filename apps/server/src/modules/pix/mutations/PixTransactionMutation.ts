@@ -36,11 +36,8 @@ const mutation = mutationWithClientMutationId({
     args: PixTransactionInput,
     { user, leakyBucket },
   ) => {
-    if (!user || !leakyBucket) {
-      throw new Error("Authentication required.");
-    }
-
     const isAllowed = await leakyBucket.leakTokens(REQUEST_COST);
+
     if (!isAllowed) {
       throw new Error("Rate limited, please wait.");
     }

@@ -4,3 +4,6 @@ export const SubscriptionType = new GraphQLObjectType({
   name: "Subscription",
   fields: () => ({}),
 });
+
+export const SubscriptionPermissions = {
+}
