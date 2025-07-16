@@ -2,6 +2,8 @@ import { useState } from "react";
 import { graphql } from "relay-runtime";
 import { useMutation } from "react-relay";
 import { parseError } from "../relay/utils";
+import { setCookie } from 'nookies'
+import Router from "next/router";
 
 import { ArrowForward } from "@mui/icons-material";
 import { Box, Link, Typography } from "@mui/material";
@@ -47,6 +49,8 @@ const Login = () => {
                 }
 
                 if (response.UserLogin?.token) {
+                    setCookie(undefined, 'woovi.token', response.UserLogin.token, {maxAge: 60 * 60 * 1})
+                    Router.push('/')
                 }
             },
 

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { graphql } from "relay-runtime";
 import { useMutation } from "react-relay";
+import { destroyCookie } from "nookies"
+import Router from "next/router";
 
 import { 
     Search, 
@@ -9,7 +11,8 @@ import {
     ErrorOutline
 } from "@mui/icons-material";
 import { 
-    Box, 
+    Box,
+    Button,
     Card, 
     CardContent,
     Chip,
@@ -87,8 +90,14 @@ const Index = () => {
                 }
             }
         });
-        
     };
+
+    const handleLogout = () => {
+        destroyCookie(undefined, 'woovi.token', {
+            path: '/'
+        })
+        Router.push('/login')
+    }
 
     return (
         <StyledContainer>
@@ -235,6 +244,21 @@ const Index = () => {
                         </Fade>
                     )}
             </Box>
+
+            <Button
+                variant="contained"
+                color="error"
+                sx={{
+                    marginTop: '20px',
+                    shadowBox: 'none',
+                    '&:hover': {
+                        shadowBox: 'none'
+                    }
+                }}
+                onClick={handleLogout}
+            >
+                Sair
+            </Button>
         </StyledContainer>
     );
 };

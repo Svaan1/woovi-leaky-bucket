@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useMutation } from "react-relay";
 import { graphql } from "relay-runtime";
 import { parseError } from "../relay/utils";
+import { setCookie } from "nookies";
+import Router from "next/router";
 
 import { ArrowForward } from "@mui/icons-material";
-import { Box, Link, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 import { EmailField, Header, FormBox, PageTitle} from "../components";
 import { StyledButton, StyledContainer, StyledTextField, StyledLink } from "@woovi-playground/ui";
@@ -48,6 +50,8 @@ const Register = () => {
                 }
 
                 if (response.UserSignup?.token) {
+                    setCookie(undefined, 'woovi.token', response.UserSignup.token, {maxAge: 60 * 60 * 1})
+                    Router.push('/')
                 }
             },
 
@@ -110,7 +114,7 @@ const Register = () => {
                 <Typography variant="body2">
                     Já tem uma conta?
                 </Typography>
-                <StyledLink>
+                <StyledLink href="/login">
                     <Typography variant="body2">
                         Clique aqui para fazer login
                     </Typography>

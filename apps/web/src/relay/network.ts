@@ -6,6 +6,7 @@ import {
 	RequestParameters,
 	Variables,
 } from 'relay-runtime';
+import { parseCookies } from 'nookies'
 import { subscribe } from './websocket';
 
 const ONE_MINUTE_IN_MS = 60 * 1000;
@@ -34,7 +35,7 @@ function createNetwork() {
 		}
 
 		const headers: { Authorization?: string } = {};
-		const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+		const { 'woovi.token': token } = parseCookies()
 
 		if (token) {
 			headers.Authorization = `Bearer ${token}`;
