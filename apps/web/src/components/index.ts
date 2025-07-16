@@ -1,5 +1,13 @@
+export { AppLogo } from "./AppLogo";
+export { AuthError } from "./AuthError";
+export { AuthFooter } from "./AuthFooter";
+export { AuthForm } from "./AuthForm";
 export { EmailField } from "./EmailField";
-export { FormBox } from "./FormBox";
-export { Header } from "./Header";
-export { PageTitle } from "./PageTitle";
+export { FormContainer } from "./FormContainer";
+export { FormTitle } from "./FormTitle";
+export { LogoutButton } from "./LogoutButton";
+export { PasswordField } from "./PasswordField";
+export { PixError } from "./PixError";
+export { PixForm } from "./PixForm";
+export { PixResult } from "./PixResult";
 export { WooviIcon } from "./WooviIcon";

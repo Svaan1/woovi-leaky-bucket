@@ -9,7 +9,6 @@ export const StyledButton = styled(Button)<ButtonProps>(({ theme }) => ({
   borderRadius: 4,
   boxShadow: "none",
   "&:hover": {
-    backgroundColor: theme.palette.primary.main,
     boxShadow: "none",
   },
 }));
