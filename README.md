@@ -4,22 +4,6 @@ My attempt at implementing the code [challenge from woovi](https://github.com/wo
 
 Template: [woovi-playground](https://github.com/woovibr/woovi-playground)
 
-## Considerations
-
-In this part i document some of my tought processes, difficulties, opinions i had during the development. I'm just yapping so any of this could be wrong or aggregate to nothing.
-
-### Web Development is heavily opinionated
-
-Too many tools, too many options, too many best practices. It's great to see an ever evolving ecosystem that tries at all times to create newer and better solutions to existing problems, but it makes it really damn hard to find solid ground when learning. I guess what makes a good developer nowadays is how fast they can adapt to these.
-
-Specially when working with niche stacks that aim to solve specifics problems, like in the case of GraphQL. It creates great benefits on what it proposes, but at the cost of a completely different specification from most common options such as REST.
-
-That being said, the developer experience wasn't bad at all, no typing problems from TS, no pipeline errors from Turbo, no package issues from PNPM, i will definitely use it again in the future, hopefully with some defined structure to refer to.
-
-### AIs are not great yet
-
-I don't think i ever had worst results using AI, my guess is the smaller number of public sample codes it can scan? It couldn't even write test cases properly, but once i've wrote the first it followed the patterns (something which they are best at) with no problems.
-
 ## Getting Started
 
 To get a local copy up and running follow these simple example steps.
