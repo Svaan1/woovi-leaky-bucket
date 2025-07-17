@@ -80,10 +80,11 @@ export const AuthForm = ({
         variant="contained"
         fullWidth
         type="submit"
-        disabled={!isEmailValid || isLoading || (showNameField && !isNameValid) || (showPasswordValidation && !isPasswordValid)}
+        loading={isLoading}
+        disabled={!isEmailValid || (showNameField && !isNameValid) || (showPasswordValidation && !isPasswordValid)}
       >
         {buttonText}
-        <ArrowForward sx={{ ml: 1 }} />
+        {!isLoading && <ArrowForward sx={{ ml: 1 }} />}
       </StyledButton>
     </FormContainer>
   );

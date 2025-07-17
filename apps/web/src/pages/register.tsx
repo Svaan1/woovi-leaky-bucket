@@ -4,8 +4,9 @@ import { graphql } from "relay-runtime";
 import { parseError } from "../relay/utils";
 import { setCookie } from "nookies";
 import Router from "next/router";
+import { Fade } from "@mui/material";
 
-import { AppLogo, AuthForm, AuthFooter } from "../components";
+import { AppLogo, AuthForm, AuthFooter, AuthSuccess } from "../components";
 import { StyledContainer } from "@woovi-playground/ui";
 
 import { registerMutation as RegisterMutationType } from "../__generated__/registerMutation.graphql";
@@ -25,6 +26,8 @@ const Register = () => {
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   const [commitMutation, isMutationInFlight] =
     useMutation<RegisterMutationType>(RegisterMutation);
@@ -52,7 +55,14 @@ const Register = () => {
           setCookie(undefined, "woovi.token", response.UserSignup.token, {
             maxAge: 60 * 60 * 1,
           });
-          Router.push("/");
+          
+          setSuccess(true);
+          
+          // Delayed redirect
+          setTimeout(() => {
+            setRedirecting(true);
+            setTimeout(() => Router.push("/"), 250);
+          }, 500);
         }
       },
 
@@ -63,38 +73,46 @@ const Register = () => {
   }
 
   return (
-    <StyledContainer>
-      <AppLogo />
-      
-      <AuthForm
-        title="Crie sua Conta"
-        subtitle="Cadastre-se rapidamente e comece a vender mais"
-        name={name}
-        email={email}
-        password={password}
-        isNameValid={isNameValid}
-        isEmailValid={isEmailValid}
-        isPasswordValid={isPasswordValid}
-        error={error}
-        isLoading={isMutationInFlight}
-        buttonText="Continuar"
-        onSubmit={handleSubmit}
-        onNameChange={setName}
-        onEmailChange={setEmail}
-        onPasswordChange={setPassword}
-        onNameValidChange={setIsNameValid}
-        onEmailValidChange={setIsEmailValid}
-        onPasswordValidChange={setIsPasswordValid}
-        showNameField={true}
-        showPasswordValidation={true}
-      />
-      
-      <AuthFooter
-        text="Já tem uma conta?"
-        linkText="Clique aqui para fazer login"
-        linkHref="/login"
-      />
-    </StyledContainer>
+    <Fade in={!redirecting} timeout={250}>
+      <StyledContainer>
+        <AppLogo />
+        
+        {success ? (
+          <AuthSuccess message="Conta criada com sucesso! Redirecionando..." />
+        ) : (
+          <AuthForm
+            title="Crie sua Conta"
+            subtitle="Cadastre-se rapidamente e comece a vender mais"
+            name={name}
+            email={email}
+            password={password}
+            isNameValid={isNameValid}
+            isEmailValid={isEmailValid}
+            isPasswordValid={isPasswordValid}
+            error={error}
+            isLoading={isMutationInFlight}
+            buttonText={isMutationInFlight ? "Registrando..." : "Continuar"}
+            onSubmit={handleSubmit}
+            onNameChange={setName}
+            onEmailChange={setEmail}
+            onPasswordChange={setPassword}
+            onNameValidChange={setIsNameValid}
+            onEmailValidChange={setIsEmailValid}
+            onPasswordValidChange={setIsPasswordValid}
+            showNameField={true}
+            showPasswordValidation={true}
+          />
+        )}
+        
+        {!success && (
+          <AuthFooter
+            text="Já tem uma conta?"
+            linkText="Clique aqui para fazer login"
+            linkHref="/login"
+          />
+        )}
+      </StyledContainer>
+    </Fade>
   );
 };
 

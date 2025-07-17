@@ -2,6 +2,7 @@ export { AppLogo } from "./AppLogo";
 export { AuthError } from "./AuthError";
 export { AuthFooter } from "./AuthFooter";
 export { AuthForm } from "./AuthForm";
+export { AuthSuccess } from "./AuthSuccess";
 export { EmailField } from "./EmailField";
 export { FormContainer } from "./FormContainer";
 export { FormTitle } from "./FormTitle";

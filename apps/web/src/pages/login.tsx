@@ -4,8 +4,9 @@ import { useMutation } from "react-relay";
 import { parseError } from "../relay/utils";
 import { setCookie } from "nookies";
 import Router from "next/router";
+import { Fade } from "@mui/material";
 
-import { AppLogo, AuthForm, AuthFooter } from "../components";
+import { AppLogo, AuthForm, AuthFooter, AuthSuccess } from "../components";
 import { StyledContainer } from "@woovi-playground/ui";
 
 import { loginMutation as LoginMutationType } from "../__generated__/loginMutation.graphql";
@@ -23,6 +24,8 @@ const Login = () => {
   const [isEmailValid, setIsEmailValid] = useState(false);
   
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   const [commitMutation, isMutationInFlight] =
     useMutation<LoginMutationType>(LoginMutation);
 
@@ -48,7 +51,14 @@ const Login = () => {
           setCookie(undefined, "woovi.token", response.UserLogin.token, {
             maxAge: 60 * 60 * 1,
           });
-          Router.push("/");
+          
+          setSuccess(true);
+          
+          // Delay before redirecting
+          setTimeout(() => {
+            setRedirecting(true);
+            setTimeout(() => Router.push("/"), 250);
+          }, 500);
         }
       },
 
@@ -59,29 +69,37 @@ const Login = () => {
   }
 
   return (
-    <StyledContainer>
-      <AppLogo />
-      
-      <AuthForm
-        title="Login"
-        email={email}
-        password={password}
-        isEmailValid={isEmailValid}
-        error={error}
-        isLoading={isMutationInFlight}
-        buttonText="Continuar"
-        onSubmit={handleSubmit}
-        onEmailChange={setEmail}
-        onPasswordChange={setPassword}
-        onEmailValidChange={setIsEmailValid}
-      />
-      
-      <AuthFooter
-        text="Novo na Woovi?"
-        linkText="Clique aqui pra se cadastrar"
-        linkHref="/register"
-      />
-    </StyledContainer>
+    <Fade in={!redirecting} timeout={250}>
+      <StyledContainer>
+        <AppLogo />
+        
+        {success ? (
+          <AuthSuccess message="Login realizado com sucesso! Redirecionando..." />
+        ) : (
+          <AuthForm
+            title="Login"
+            email={email}
+            password={password}
+            isEmailValid={isEmailValid}
+            error={error}
+            isLoading={isMutationInFlight}
+            buttonText={isMutationInFlight ? "Autenticando..." : "Continuar"}
+            onSubmit={handleSubmit}
+            onEmailChange={setEmail}
+            onPasswordChange={setPassword}
+            onEmailValidChange={setIsEmailValid}
+          />
+        )}
+        
+        {!success && (
+          <AuthFooter
+            text="Novo na Woovi?"
+            linkText="Clique aqui pra se cadastrar"
+            linkHref="/register"
+          />
+        )}
+      </StyledContainer>
+    </Fade>
   );
 };
 
