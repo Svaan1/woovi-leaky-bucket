@@ -4,6 +4,7 @@ export interface LeakyBucket {
   tokens: number;
   lastFillTime: number;
 }
+
 export interface LeakyBucketConfig {
   fillIntervalMs: number;
   maxTokens: number;
@@ -18,9 +19,9 @@ class LeakyBucketError extends Error {
 }
 
 export class LeakyBucketService {
-  private config: LeakyBucketConfig;
-  private userId: string;
-  private bucketKey: string;
+  private readonly config: LeakyBucketConfig;
+  private readonly userId: string;
+  private readonly bucketKey: string;
 
   constructor(userId: string, config: LeakyBucketConfig) {
     this.config = config;
@@ -28,66 +29,36 @@ export class LeakyBucketService {
     this.bucketKey = `leaky-bucket:user:${userId}`;
   }
 
+  get bucketConfig(): LeakyBucketConfig {
+    return this.config;
+  }
+
   async leakTokens(tokensToConsume: number): Promise<boolean> {
+    this.validateTokenAmount(tokensToConsume);
+
     try {
-      if (tokensToConsume <= 0) {
-        throw new LeakyBucketError(
-          "Tokens to consume must be a positive number",
-        );
-      }
-
-      let bucket = await this.fetchBucket();
-
-      if (!bucket) {
-        bucket = await this.createBucket();
-      }
-
-      console.log(bucket);
-
-      const currentTimestamp = Date.now();
-      const elapsedTimeMs = currentTimestamp - bucket.lastFillTime;
-      const tokensToRefill = Math.floor(
-        elapsedTimeMs / this.config.fillIntervalMs,
-      );
-
-      if (tokensToRefill > 0) {
-        bucket.tokens = Math.min(
-          bucket.tokens + tokensToRefill,
-          this.config.maxTokens,
-        );
-        bucket.lastFillTime = currentTimestamp;
-      }
-
-      if (bucket.tokens < tokensToConsume) {
-        await this.saveBucket(bucket);
+      const bucket = await this.getBucketOrCreate();
+      const updatedBucket = this.refillBucketTokens(bucket);
+      
+      if (!this.hasEnoughTokens(updatedBucket, tokensToConsume)) {
+        await this.saveBucket(updatedBucket);
         return false;
       }
 
-      bucket.tokens -= tokensToConsume;
-      await this.saveBucket(bucket);
+      updatedBucket.tokens -= tokensToConsume;
+      await this.saveBucket(updatedBucket);
       return true;
     } catch (error) {
-      if (error instanceof LeakyBucketError) {
-        throw error;
-      }
-      throw new LeakyBucketError(
-        `Failed to consume tokens: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-      );
+      throw this.wrapError(error, "Failed to consume tokens");
     }
   }
 
   async refundTokens(tokensToRefund: number): Promise<void> {
+    this.validateTokenAmount(tokensToRefund);
+
     try {
-      if (tokensToRefund <= 0) {
-        throw new LeakyBucketError(
-          "Tokens to refund must be a positive number",
-        );
-      }
-
       const bucket = await this.fetchBucket();
-
+      
       if (!bucket) {
         throw new LeakyBucketError(
           `Cannot refund tokens: Bucket for user ${this.userId} does not exist.`,
@@ -98,17 +69,73 @@ export class LeakyBucketService {
         bucket.tokens + tokensToRefund,
         this.config.maxTokens,
       );
+      
       await this.saveBucket(bucket);
     } catch (error) {
-      if (error instanceof LeakyBucketError) {
-        throw error;
-      }
+      throw this.wrapError(error, "Failed to refund tokens");
+    }
+  }
+
+  async getCurrentTokens(): Promise<number> {
+    try {
+      const bucket = await this.getBucketOrCreate();
+      const updatedBucket = this.refillBucketTokens(bucket);
+      
+      // Save the updated bucket with refilled tokens
+      await this.saveBucket(updatedBucket);
+      
+      return updatedBucket.tokens;
+    } catch (error) {
+      throw this.wrapError(error, "Failed to get current tokens");
+    }
+  }
+
+  private validateTokenAmount(tokenAmount: number): void {
+    if (tokenAmount <= 0) {
       throw new LeakyBucketError(
-        `Failed to refund tokens: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
+        `Tokens must be a positive number`,
       );
     }
+  }
+
+  /**
+   * Gets existing bucket or creates a new one if it doesn't exist.
+   */
+  private async getBucketOrCreate(): Promise<LeakyBucket> {
+    const existingBucket = await this.fetchBucket();
+    return existingBucket || await this.createBucket();
+  }
+
+  /**
+   * Refills tokens in the bucket based on elapsed time.
+   */
+  private refillBucketTokens(bucket: LeakyBucket): LeakyBucket {
+    const currentTimestamp = Date.now();
+    const elapsedTimeMs = currentTimestamp - bucket.lastFillTime;
+    const tokensToRefill = Math.floor(elapsedTimeMs / this.config.fillIntervalMs);
+
+    if (tokensToRefill > 0) {
+      bucket.tokens = Math.min(
+        bucket.tokens + tokensToRefill,
+        this.config.maxTokens,
+      );
+      bucket.lastFillTime = currentTimestamp;
+    }
+
+    return bucket;
+  }
+
+  private hasEnoughTokens(bucket: LeakyBucket, tokensNeeded: number): boolean {
+    return bucket.tokens >= tokensNeeded;
+  }
+
+  private wrapError(error: unknown, message: string): LeakyBucketError {
+    if (error instanceof LeakyBucketError) {
+      return error;
+    }
+    
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return new LeakyBucketError(`${message}: ${errorMessage}`);
   }
 
   private async fetchBucket(): Promise<LeakyBucket | null> {

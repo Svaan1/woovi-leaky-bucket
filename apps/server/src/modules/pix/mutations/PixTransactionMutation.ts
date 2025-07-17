@@ -6,14 +6,6 @@ import {
 } from "graphql";
 import { mutationWithClientMutationId } from "graphql-relay";
 
-const REQUEST_COST = 1;
-
-const VALID_PIX_KEYS = {
-  "valid-key": {
-    name: "Paulo Ricardo",
-    bank: "Nubank",
-  },
-};
 
 export type PixTransactionInput = {
   pixKey: string;
@@ -36,18 +28,27 @@ const mutation = mutationWithClientMutationId({
     args: PixTransactionInput,
     { user, leakyBucket },
   ) => {
-    const isAllowed = await leakyBucket.leakTokens(REQUEST_COST);
+    const requestCost = 1;
+    const isAllowed = await leakyBucket.leakTokens(requestCost);
 
     if (!isAllowed) {
       throw new Error("Rate limited, please wait.");
     }
 
+    const VALID_PIX_KEYS = {
+      "valid-key": {
+        name: "Paulo Ricardo",
+        bank: "Nubank",
+      },
+    };
+
     const pixKey = VALID_PIX_KEYS[args.pixKey];
+  
     if (!pixKey) {
       throw new Error("Invalid key");
     }
 
-    await leakyBucket.refundTokens(REQUEST_COST);
+    await leakyBucket.refundTokens(requestCost);
 
     return {
       ...pixKey,

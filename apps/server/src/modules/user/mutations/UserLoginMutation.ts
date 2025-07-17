@@ -4,6 +4,7 @@ import { mutationWithClientMutationId } from "graphql-relay";
 import { User } from "../UserModel";
 import { comparePassword } from "../../auth/crypt";
 import { generateToken } from "../../auth/jwt";
+import { UserType } from "../UserType";
 
 export type UserLoginInput = {
   email: string;
@@ -35,12 +36,16 @@ const mutation = mutationWithClientMutationId({
 
     return {
       token: generateToken({ id: user.id }),
+      user: user
     };
   },
   outputFields: {
     token: {
       type: GraphQLString,
     },
+    user: {
+      type: UserType
+    }
   },
 });
 

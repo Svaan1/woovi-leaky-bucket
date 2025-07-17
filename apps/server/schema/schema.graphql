@@ -12,6 +12,9 @@ type Query {
     """Returns the last n items from the list."""
     last: Int
   ): UserConnection
+
+  """Get current user's token information"""
+  tokens: Tokens!
 }
 
 """A connection to a list of items."""
@@ -51,8 +54,8 @@ type UserEdge {
 type User implements Node {
   """The ID of an object"""
   id: ID!
+  name: String
   email: String
-  password: String
   createdAt: String
 }
 
@@ -60,6 +63,18 @@ type User implements Node {
 interface Node {
   """The id of the object."""
   id: ID!
+}
+
+"""User's current token information"""
+type Tokens {
+  """The user ID"""
+  userId: String
+
+  """Current number of tokens available"""
+  currentTokens: Int
+
+  """Maximum number of tokens that can be held"""
+  maxTokens: Int
 }
 
 type Mutation {
@@ -70,10 +85,12 @@ type Mutation {
 
 type UserSignupPayload {
   token: String
+  user: User
   clientMutationId: String
 }
 
 input UserSignupInput {
+  name: String!
   email: String!
   password: String!
   clientMutationId: String
@@ -81,6 +98,7 @@ input UserSignupInput {
 
 type UserLoginPayload {
   token: String
+  user: User
   clientMutationId: String
 }
 

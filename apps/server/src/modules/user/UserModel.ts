@@ -3,12 +3,15 @@ import mongoose from "mongoose";
 
 const Schema = new mongoose.Schema<IUser>(
   {
+    name: {
+      type: String,
+      description: "The user's name",
+    },
     email: {
       type: String,
       description: "The user's email",
       unique: true,
     },
-
     password: {
       type: String,
       description: "The user's password",
@@ -21,6 +24,7 @@ const Schema = new mongoose.Schema<IUser>(
 );
 
 export type IUser = {
+  name: string;
   email: string;
   password: string;
   createdAt: Date;
