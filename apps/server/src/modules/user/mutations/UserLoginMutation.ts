@@ -36,16 +36,12 @@ const mutation = mutationWithClientMutationId({
 
     return {
       token: generateToken({ id: user.id }),
-      user: user
     };
   },
   outputFields: {
     token: {
       type: GraphQLString,
     },
-    user: {
-      type: UserType
-    }
   },
 });
 
