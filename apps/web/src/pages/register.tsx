@@ -12,15 +12,18 @@ import { registerMutation as RegisterMutationType } from "../__generated__/regis
 
 const Register = () => {
   const RegisterMutation = graphql`
-    mutation registerMutation($email: String!, $password: String!) {
-      UserSignup(input: { email: $email, password: $password }) {
+    mutation registerMutation($name: String!, $email: String!, $password: String!) {
+      UserSignup(input: { name: $name, email: $email, password: $password }) {
         token
       }
     }
   `;
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isNameValid, setIsNameValid] = useState(false);
   const [isEmailValid, setIsEmailValid] = useState(false);
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [commitMutation, isMutationInFlight] =
@@ -31,6 +34,7 @@ const Register = () => {
 
     commitMutation({
       variables: {
+        name: name,
         email: email,
         password: password,
       },
@@ -65,16 +69,24 @@ const Register = () => {
       <AuthForm
         title="Crie sua Conta"
         subtitle="Cadastre-se rapidamente e comece a vender mais"
+        name={name}
         email={email}
         password={password}
+        isNameValid={isNameValid}
         isEmailValid={isEmailValid}
+        isPasswordValid={isPasswordValid}
         error={error}
         isLoading={isMutationInFlight}
         buttonText="Continuar"
         onSubmit={handleSubmit}
+        onNameChange={setName}
         onEmailChange={setEmail}
         onPasswordChange={setPassword}
+        onNameValidChange={setIsNameValid}
         onEmailValidChange={setIsEmailValid}
+        onPasswordValidChange={setIsPasswordValid}
+        showNameField={true}
+        showPasswordValidation={true}
       />
       
       <AuthFooter

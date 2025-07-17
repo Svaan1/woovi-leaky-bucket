@@ -6,6 +6,7 @@ export { EmailField } from "./EmailField";
 export { FormContainer } from "./FormContainer";
 export { FormTitle } from "./FormTitle";
 export { LogoutButton } from "./LogoutButton";
+export { NameField } from "./NameField";
 export { PasswordField } from "./PasswordField";
 export { PixError } from "./PixError";
 export { PixForm } from "./PixForm";

@@ -18,7 +18,7 @@ export const AuthFooter = ({ text, linkText, linkHref }: AuthFooterProps) => {
         gap: 1,
       }}
     >
-      <Typography variant="body2">{text}</Typography>
+      <Typography variant="body1">{text}</Typography>
       <StyledLink href={linkHref}>
         <Typography variant="body2">
           {linkText}

@@ -8,19 +8,27 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: "Nunito, sans-serif",
+    fontFamily: "Nunito",
     h1: {
-      fontSize: "32px",
+      fontSize: "28px",
       fontWeight: 600,
+      lineHeight: 1.167,
     },
-    h2: {
-      fontSize: "24px",
-      fontWeight: 600,
-    },
-    subtitle1: {
-      fontSize: "16px",
+    h5: {
+      fontSize: "1.28571rem",
       fontWeight: 400,
+      lineHeight: 1.334,
     },
+    body1: {
+      fontSize: "0.857143rem",
+      fontWeight: 400,
+      lineHeight: 1.5,
+    },
+    body2: {
+      fontSize: "0.875rem",
+      fontWeight: 400,
+      lineHeight: 1.43
+    }
   },
 });
 

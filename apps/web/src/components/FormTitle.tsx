@@ -7,14 +7,13 @@ interface FormTitleProps {
 
 export const FormTitle = ({ title, subtitle }: FormTitleProps) => (
   <>
-    <Typography variant="h2" textAlign="center" mb={3} color="text.primary">
+    <Typography variant="h1" textAlign="center" mb={0.5} color="text.primary">
       {title}
     </Typography>
     {subtitle && (
       <Typography
         variant="subtitle1"
         textAlign="center"
-        mb={2}
         color="text.secondary"
       >
         {subtitle}

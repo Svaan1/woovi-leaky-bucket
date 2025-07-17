@@ -4,7 +4,7 @@ import { Button, ButtonProps } from "@mui/material";
 
 export const StyledButton = styled(Button)<ButtonProps>(({ theme }) => ({
   textTransform: "inherit",
-  minHeight: "35px",
+  minHeight: "30px",
   height: "1.5vw",
   borderRadius: 4,
   boxShadow: "none",
