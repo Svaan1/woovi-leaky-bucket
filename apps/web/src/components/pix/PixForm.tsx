@@ -8,7 +8,7 @@ import {
   StyledButton,
   StyledTextField,
 } from "@woovi-playground/ui";
-import { FormTitle } from "./FormTitle";
+import { FormTitle } from "../form/FormTitle";
 
 interface PixFormProps {
   pixKey: string;

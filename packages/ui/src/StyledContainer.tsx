@@ -7,7 +7,7 @@ export const StyledContainer = styled(Container)<ContainerProps>(
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     height: "100vh",
     p: 2,
   }),

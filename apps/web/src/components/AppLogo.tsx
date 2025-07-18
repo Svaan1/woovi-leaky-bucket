@@ -14,6 +14,8 @@ export const AppLogo = () => (
       sx={{
         width: "120px",
         height: "auto",
+        marginTop: "40px",
+        marginBottom: "30px"
       }}
     />
   </Box>

@@ -4,12 +4,27 @@ import { graphql } from "relay-runtime";
 import { parseError } from "../relay/utils";
 import { setCookie } from "nookies";
 import Router from "next/router";
-import { Fade } from "@mui/material";
+import { Fade, FormControl, FormHelperText } from "@mui/material";
+import { ArrowForward } from "@mui/icons-material";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { AppLogo, AuthForm, AuthFooter, AuthSuccess } from "../components";
-import { StyledContainer } from "@woovi-playground/ui";
+import { FormTitle, AppLogo, FormContainer, AuthFooter, AuthSuccess, AuthError } from "../components";
+import { StyledContainer, StyledTextField, StyledButton } from "@woovi-playground/ui";
 
 import { registerMutation as RegisterMutationType } from "../__generated__/registerMutation.graphql";
+
+const registerSchema = z.object({
+  name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
+  email: z.email("Email inválido"),
+  password: z.string()
+    .min(6, "Senha deve ter pelo menos 6 caracteres")
+    .regex(/[A-Z]/, "Deve conter pelo menos uma letra maiúscula")
+    .regex(/\d/, "Deve conter pelo menos um número")
+});
+
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
 const Register = () => {
   const RegisterMutation = graphql`
@@ -19,32 +34,29 @@ const Register = () => {
       }
     }
   `;
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isNameValid, setIsNameValid] = useState(false);
-  const [isEmailValid, setIsEmailValid] = useState(false);
-  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  
+  const { register, handleSubmit: validateForm, formState: { errors, isValid }, getValues } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    mode: "onChange"
+  });
+  
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
 
-  const [commitMutation, isMutationInFlight] =
-    useMutation<RegisterMutationType>(RegisterMutation);
+  const [commitMutation, isMutationInFlight] = useMutation<RegisterMutationType>(RegisterMutation);
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
+  function handleSubmit(formValues: RegisterFormValues) {
+    setError(null);
+    
     commitMutation({
       variables: {
-        name: name,
-        email: email,
-        password: password,
+        name: formValues.name,
+        email: formValues.email,
+        password: formValues.password,
       },
 
       onCompleted: (response, errors) => {
-        setError(null);
-
         if (errors) {
           const errorMessage = errors.map((e) => e.message).join(", ");
           setError(errorMessage);
@@ -58,7 +70,6 @@ const Register = () => {
           
           setSuccess(true);
           
-          // Delayed redirect
           setTimeout(() => {
             setRedirecting(true);
             setTimeout(() => Router.push("/"), 250);
@@ -80,28 +91,58 @@ const Register = () => {
         {success ? (
           <AuthSuccess message="Conta criada com sucesso! Redirecionando..." />
         ) : (
-          <AuthForm
-            title="Crie sua Conta"
-            subtitle="Cadastre-se rapidamente e comece a vender mais"
-            name={name}
-            email={email}
-            password={password}
-            isNameValid={isNameValid}
-            isEmailValid={isEmailValid}
-            isPasswordValid={isPasswordValid}
-            error={error}
-            isLoading={isMutationInFlight}
-            buttonText={isMutationInFlight ? "Registrando..." : "Continuar"}
-            onSubmit={handleSubmit}
-            onNameChange={setName}
-            onEmailChange={setEmail}
-            onPasswordChange={setPassword}
-            onNameValidChange={setIsNameValid}
-            onEmailValidChange={setIsEmailValid}
-            onPasswordValidChange={setIsPasswordValid}
-            showNameField={true}
-            showPasswordValidation={true}
-          />
+          <FormContainer onSubmit={validateForm(handleSubmit)}>
+            <FormTitle 
+              title="Crie sua Conta" 
+              subtitle="Cadastre-se rapidamente e comece a vender mais"
+            />
+            
+            {error && <AuthError error={error} />}
+            
+            <FormControl fullWidth error={!!errors.name}>
+              <StyledTextField
+                label="Nome Completo"
+                fullWidth
+                {...register("name")}
+                error={!!errors.name}
+              />
+              {errors.name && <FormHelperText>{errors.name.message}</FormHelperText>}
+            </FormControl>
+            
+            <FormControl fullWidth error={!!errors.email}>
+              <StyledTextField
+                label="Email"
+                type="email"
+                fullWidth
+                {...register("email")}
+                error={!!errors.email}
+              />
+              {errors.email && <FormHelperText>{errors.email.message}</FormHelperText>}
+            </FormControl>
+            
+            <FormControl fullWidth error={!!errors.password}>
+              <StyledTextField
+                label="Senha"
+                type="password"
+                fullWidth
+                {...register("password")}
+                error={!!errors.password}
+              />
+              {errors.password && <FormHelperText>{errors.password.message}</FormHelperText>}
+            </FormControl>
+            
+            <StyledButton
+              variant="contained"
+              fullWidth
+              type="submit"
+              loading={isMutationInFlight}
+              disabled={!isValid || isMutationInFlight}
+              sx={{ mt: 2 }}
+            >
+              {isMutationInFlight ? "Registrando..." : "Continuar"}
+              {!isMutationInFlight && <ArrowForward sx={{ ml: 1 }} />}
+            </StyledButton>
+          </FormContainer>
         )}
         
         {!success && (

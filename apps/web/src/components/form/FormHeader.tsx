@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { WooviIcon } from "./WooviIcon";
+import { WooviIcon } from "../WooviIcon";
 
 export const AppLogo = () => (
   <Box

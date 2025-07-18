@@ -1,15 +1,28 @@
+import Router from "next/router";
 import { useState } from "react";
 import { graphql } from "relay-runtime";
 import { useMutation } from "react-relay";
 import { parseError } from "../relay/utils";
+import { useForm } from "react-hook-form";
 import { setCookie } from "nookies";
-import Router from "next/router";
-import { Fade } from "@mui/material";
 
-import { AppLogo, AuthForm, AuthFooter, AuthSuccess } from "../components";
-import { StyledContainer } from "@woovi-playground/ui";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { Fade, FormControl, FormHelperText } from "@mui/material";
+import { ArrowForward } from "@mui/icons-material";
+
+import { FormTitle, AppLogo, FormContainer, AuthFooter, AuthSuccess, AuthError } from "../components";
+import { StyledContainer, StyledTextField, StyledButton } from "@woovi-playground/ui";
 
 import { loginMutation as LoginMutationType } from "../__generated__/loginMutation.graphql";
+
+const loginSchema = z.object({
+  email: z.email("Email inválido"),
+  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres")
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const LoginMutation = graphql`
@@ -19,28 +32,27 @@ const Login = () => {
       }
     }
   `;
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isEmailValid, setIsEmailValid] = useState(false);
+  
+  const {  register, handleSubmit: validateForm, formState: { errors, isValid }, getValues } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    mode: "onChange"
+  });
   
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
-  const [commitMutation, isMutationInFlight] =
-    useMutation<LoginMutationType>(LoginMutation);
+  const [commitMutation, isMutationInFlight] = useMutation<LoginMutationType>(LoginMutation);
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
+  function handleSubmit(formValues: LoginFormValues) {
+    setError(null);
+    
     commitMutation({
       variables: {
-        email: email,
-        password: password,
+        email: formValues.email,
+        password: formValues.password,
       },
 
       onCompleted: (response, errors) => {
-        setError(null);
-
         if (errors) {
           const errorMessage = errors.map((e) => e.message).join(", ");
           setError(errorMessage);
@@ -58,7 +70,7 @@ const Login = () => {
           setTimeout(() => {
             setRedirecting(true);
             setTimeout(() => Router.push("/"), 250);
-          }, 500);
+          }, 250);
         }
       },
 
@@ -71,24 +83,50 @@ const Login = () => {
   return (
     <Fade in={!redirecting} timeout={250}>
       <StyledContainer>
-        <AppLogo />
+        <AppLogo/>
         
         {success ? (
           <AuthSuccess message="Login realizado com sucesso! Redirecionando..." />
         ) : (
-          <AuthForm
-            title="Login"
-            email={email}
-            password={password}
-            isEmailValid={isEmailValid}
-            error={error}
-            isLoading={isMutationInFlight}
-            buttonText={isMutationInFlight ? "Autenticando..." : "Continuar"}
-            onSubmit={handleSubmit}
-            onEmailChange={setEmail}
-            onPasswordChange={setPassword}
-            onEmailValidChange={setIsEmailValid}
-          />
+          <FormContainer onSubmit={validateForm(handleSubmit)}>
+            <FormTitle title="Login" />
+            
+            {error && <AuthError error={error} />}
+            
+            <FormControl fullWidth error={!!errors.email}>
+              <StyledTextField
+                label="Email"
+                type="email"
+                fullWidth
+                {...register("email")}
+                error={!!errors.email}
+              />
+              {errors.email && <FormHelperText>{errors.email.message}</FormHelperText>}
+            </FormControl>
+            
+            <FormControl fullWidth error={!!errors.password}>
+              <StyledTextField
+                label="Senha"
+                type="password"
+                fullWidth
+                {...register("password")}
+                error={!!errors.password}
+              />
+              {errors.password && <FormHelperText>{errors.password.message}</FormHelperText>}
+            </FormControl>
+            
+            <StyledButton
+              variant="contained"
+              fullWidth
+              type="submit"
+              loading={isMutationInFlight}
+              disabled={!isValid || isMutationInFlight}
+              sx={{ mt: 2 }}
+            >
+              {isMutationInFlight ? "Autenticando..." : "Continuar"}
+              {!isMutationInFlight && <ArrowForward sx={{ ml: 1 }} />}
+            </StyledButton>
+          </FormContainer>
         )}
         
         {!success && (
