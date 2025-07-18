@@ -7,6 +7,7 @@ import { StyledContainer } from "@woovi-playground/ui";
 import { AppLogo, PixForm, PixError, PixResult, LogoutButton } from "../components";
 
 import { pagesPixMutation as PixPixMutationType } from "../__generated__/pagesPixMutation.graphql";
+import { parseError } from "../relay/utils";
 
 const Index = () => {
   const PixMutation = graphql`
@@ -55,15 +56,7 @@ const Index = () => {
         }
       },
       onError: (error) => {
-        const message = error.message;
-        const jsonString = message.substring(message.indexOf("["));
-        const errors = JSON.parse(jsonString);
-
-        if (Array.isArray(errors) && errors.length > 0 && errors[0].message) {
-          setError(errors[0].message);
-        } else {
-          setError("An unknown error occurred.");
-        }
+        setError(parseError(error))
       },
     });
   };

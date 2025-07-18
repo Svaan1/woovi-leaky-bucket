@@ -66,7 +66,6 @@ export const PixResult = ({ result }: PixResultProps) => {
               display: "flex",
               flexDirection: "column",
               gap: 1,
-              mt: 2,
             }}
           >
             <Typography variant="body1" sx={{ fontWeight: 600 }}>

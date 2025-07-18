@@ -55,13 +55,6 @@ export const PixForm = ({
         fullWidth
         value={pixKey}
         onChange={(e) => onPixKeyChange(e.target.value)}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <AccountBalance color="action" />
-            </InputAdornment>
-          ),
-        }}
         required
       />
 
@@ -97,8 +90,8 @@ export const PixForm = ({
           </>
         ) : (
           <>
-            <Search sx={{ mr: 1 }} />
             Consultar PIX
+            <Search sx={{ ml: 1 }} />
           </>
         )}
       </StyledButton>
