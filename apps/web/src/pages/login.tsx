@@ -9,10 +9,10 @@ import { setCookie } from "nookies";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Fade, FormControl, FormHelperText } from "@mui/material";
+import { Fade, FormControl, FormHelperText, Snackbar, Alert } from "@mui/material";
 import { ArrowForward } from "@mui/icons-material";
 
-import { FormTitle, AppLogo, FormContainer, AuthFooter, AuthSuccess, AuthError } from "../components";
+import { FormTitle, AppLogo, FormContainer, AuthFooter, AuthError, AuthSuccess } from "../components";
 import { StyledContainer, StyledTextField, StyledButton } from "@woovi-playground/ui";
 
 import { loginMutation as LoginMutationType } from "../__generated__/loginMutation.graphql";
@@ -66,11 +66,10 @@ const Login = () => {
           
           setSuccess(true);
           
-          // Delay before redirecting
           setTimeout(() => {
             setRedirecting(true);
-            setTimeout(() => Router.push("/"), 250);
-          }, 250);
+            setTimeout(() => Router.push("/"), 50);
+          }, 1000);
         }
       },
 
@@ -85,57 +84,56 @@ const Login = () => {
       <StyledContainer>
         <AppLogo/>
         
-        {success ? (
-          <AuthSuccess message="Login realizado com sucesso! Redirecionando..." />
-        ) : (
-          <FormContainer onSubmit={validateForm(handleSubmit)}>
-            <FormTitle title="Login" />
-            
-            {error && <AuthError error={error} />}
-            
-            <FormControl fullWidth error={!!errors.email}>
-              <StyledTextField
-                label="Email"
-                type="email"
-                fullWidth
-                {...register("email")}
-                error={!!errors.email}
-              />
-              {errors.email && <FormHelperText>{errors.email.message}</FormHelperText>}
-            </FormControl>
-            
-            <FormControl fullWidth error={!!errors.password}>
-              <StyledTextField
-                label="Senha"
-                type="password"
-                fullWidth
-                {...register("password")}
-                error={!!errors.password}
-              />
-              {errors.password && <FormHelperText>{errors.password.message}</FormHelperText>}
-            </FormControl>
-            
-            <StyledButton
-              variant="contained"
+        <AuthSuccess success={success}>
+          Login realizado com sucesso! Redirecionando...
+        </AuthSuccess>
+
+        <FormContainer onSubmit={validateForm(handleSubmit)}>
+          <FormTitle title="Login" />
+          
+          {error && <AuthError error={error} />}
+          
+          <FormControl fullWidth error={!!errors.email}>
+            <StyledTextField
+              label="Email"
+              type="email"
               fullWidth
-              type="submit"
-              loading={isMutationInFlight}
-              disabled={!isValid || isMutationInFlight}
-              sx={{ mt: 2 }}
-            >
-              {isMutationInFlight ? "Autenticando..." : "Continuar"}
-              {!isMutationInFlight && <ArrowForward sx={{ ml: 1 }} />}
-            </StyledButton>
-          </FormContainer>
-        )}
+              {...register("email")}
+              error={!!errors.email}
+            />
+            {errors.email && <FormHelperText>{errors.email.message}</FormHelperText>}
+          </FormControl>
+          
+          <FormControl fullWidth error={!!errors.password}>
+            <StyledTextField
+              label="Senha"
+              type="password"
+              fullWidth
+              {...register("password")}
+              error={!!errors.password}
+            />
+            {errors.password && <FormHelperText>{errors.password.message}</FormHelperText>}
+          </FormControl>
+          
+          <StyledButton
+            variant="contained"
+            fullWidth
+            type="submit"
+            loading={isMutationInFlight}
+            disabled={!isValid || isMutationInFlight || success}
+            sx={{ mt: 2 }}
+          >
+            {isMutationInFlight ? "Autenticando..." : "Continuar"}
+            {!isMutationInFlight && <ArrowForward sx={{ ml: 1 }} />}
+          </StyledButton>
+        </FormContainer>
         
-        {!success && (
-          <AuthFooter
-            text="Novo na Woovi?"
-            linkText="Clique aqui pra se cadastrar"
-            linkHref="/register"
-          />
-        )}
+        <AuthFooter
+          text="Novo na Woovi?"
+          linkText="Clique aqui pra se cadastrar"
+          linkHref="/register"
+        />
+
       </StyledContainer>
     </Fade>
   );

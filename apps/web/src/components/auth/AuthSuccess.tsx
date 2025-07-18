@@ -1,26 +1,19 @@
-import { Box, Typography } from "@mui/material";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { Snackbar, Alert } from "@mui/material";
 
 interface AuthSuccessProps {
-  message: string;
+  success: boolean;
+  children: React.ReactNode
 }
 
-export const AuthSuccess = ({ message }: AuthSuccessProps) => {
+export const AuthSuccess = ({ success, children}: AuthSuccessProps) => {
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      gap={2}
-      p={2}
-      mb={2}
-      bgcolor="rgba(76, 175, 80, 0.1)"
-      borderRadius={1}
+    <Snackbar 
+      open={success} 
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
     >
-      <CheckCircleOutlineIcon color="success" sx={{ fontSize: 40 }} />
-      <Typography variant="body1" color="success.main">
-        {message}
-      </Typography>
-    </Box>
+      <Alert severity="success" elevation={6} variant="filled">
+          {children}
+      </Alert>
+    </Snackbar>
   );
 };

@@ -4,13 +4,13 @@ import { graphql } from "relay-runtime";
 import { parseError } from "../relay/utils";
 import { setCookie } from "nookies";
 import Router from "next/router";
-import { Fade, FormControl, FormHelperText } from "@mui/material";
+import { Fade, FormControl, FormHelperText, Snackbar, Alert } from "@mui/material";
 import { ArrowForward } from "@mui/icons-material";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { FormTitle, AppLogo, FormContainer, AuthFooter, AuthSuccess, AuthError } from "../components";
+import { FormTitle, AppLogo, FormContainer, AuthFooter, AuthError, AuthSuccess } from "../components";
 import { StyledContainer, StyledTextField, StyledButton } from "@woovi-playground/ui";
 
 import { registerMutation as RegisterMutationType } from "../__generated__/registerMutation.graphql";
@@ -72,8 +72,8 @@ const Register = () => {
           
           setTimeout(() => {
             setRedirecting(true);
-            setTimeout(() => Router.push("/"), 250);
-          }, 500);
+            setTimeout(() => Router.push("/"), 50);
+          }, 1000);
         }
       },
 
@@ -87,71 +87,70 @@ const Register = () => {
     <Fade in={!redirecting} timeout={250}>
       <StyledContainer>
         <AppLogo />
+
+        <AuthSuccess success={success}>
+          Conta criada com sucesso. Redirecionando...
+        </AuthSuccess>        
         
-        {success ? (
-          <AuthSuccess message="Conta criada com sucesso! Redirecionando..." />
-        ) : (
-          <FormContainer onSubmit={validateForm(handleSubmit)}>
-            <FormTitle 
-              title="Crie sua Conta" 
-              subtitle="Cadastre-se rapidamente e comece a vender mais"
-            />
-            
-            {error && <AuthError error={error} />}
-            
-            <FormControl fullWidth error={!!errors.name}>
-              <StyledTextField
-                label="Nome Completo"
-                fullWidth
-                {...register("name")}
-                error={!!errors.name}
-              />
-              {errors.name && <FormHelperText>{errors.name.message}</FormHelperText>}
-            </FormControl>
-            
-            <FormControl fullWidth error={!!errors.email}>
-              <StyledTextField
-                label="Email"
-                type="email"
-                fullWidth
-                {...register("email")}
-                error={!!errors.email}
-              />
-              {errors.email && <FormHelperText>{errors.email.message}</FormHelperText>}
-            </FormControl>
-            
-            <FormControl fullWidth error={!!errors.password}>
-              <StyledTextField
-                label="Senha"
-                type="password"
-                fullWidth
-                {...register("password")}
-                error={!!errors.password}
-              />
-              {errors.password && <FormHelperText>{errors.password.message}</FormHelperText>}
-            </FormControl>
-            
-            <StyledButton
-              variant="contained"
+        <FormContainer onSubmit={validateForm(handleSubmit)}>
+          <FormTitle 
+            title="Crie sua Conta" 
+            subtitle="Cadastre-se rapidamente e comece a vender mais"
+          />
+          
+          {error && <AuthError error={error} />}
+          
+          <FormControl fullWidth error={!!errors.name}>
+            <StyledTextField
+              label="Nome Completo"
               fullWidth
-              type="submit"
-              loading={isMutationInFlight}
-              disabled={!isValid || isMutationInFlight}
-              sx={{ mt: 2 }}
-            >
-              {isMutationInFlight ? "Registrando..." : "Continuar"}
-              {!isMutationInFlight && <ArrowForward sx={{ ml: 1 }} />}
-            </StyledButton>
-          </FormContainer>
-        )}
-        
-        {!success && (
+              {...register("name")}
+              error={!!errors.name}
+            />
+            {errors.name && <FormHelperText>{errors.name.message}</FormHelperText>}
+          </FormControl>
+          
+          <FormControl fullWidth error={!!errors.email}>
+            <StyledTextField
+              label="Email"
+              type="email"
+              fullWidth
+              {...register("email")}
+              error={!!errors.email}
+            />
+            {errors.email && <FormHelperText>{errors.email.message}</FormHelperText>}
+          </FormControl>
+          
+          <FormControl fullWidth error={!!errors.password}>
+            <StyledTextField
+              label="Senha"
+              type="password"
+              fullWidth
+              {...register("password")}
+              error={!!errors.password}
+            />
+            {errors.password && <FormHelperText>{errors.password.message}</FormHelperText>}
+          </FormControl>
+          
+          <StyledButton
+            variant="contained"
+            fullWidth
+            type="submit"
+            loading={isMutationInFlight}
+            disabled={!isValid || isMutationInFlight || success}
+            sx={{ mt: 2 }}
+          >
+            {isMutationInFlight ? "Registrando..." : "Continuar"}
+            {!isMutationInFlight && <ArrowForward sx={{ ml: 1 }} />}
+          </StyledButton>
+
           <AuthFooter
             text="Já tem uma conta?"
             linkText="Clique aqui para fazer login"
             linkHref="/login"
           />
-        )}
+        </FormContainer>
+        
       </StyledContainer>
     </Fade>
   );
