@@ -107,7 +107,7 @@ const Register = () => {
               {...register("name")}
               error={!!errors.name}
             />
-            {errors.name && <FormHelperText>{errors.name.message}</FormHelperText>}
+            {errors.name && <FormHelperText>{`${errors.name.message}`}</FormHelperText>}
           </FormControl>
           
           <FormControl fullWidth error={!!errors.email}>
@@ -118,7 +118,7 @@ const Register = () => {
               {...register("email")}
               error={!!errors.email}
             />
-            {errors.email && <FormHelperText>{errors.email.message}</FormHelperText>}
+            {errors.email && <FormHelperText>{`${errors.email.message}`}</FormHelperText>}
           </FormControl>
           
           <FormControl fullWidth error={!!errors.password}>
@@ -129,7 +129,7 @@ const Register = () => {
               {...register("password")}
               error={!!errors.password}
             />
-            {errors.password && <FormHelperText>{errors.password.message}</FormHelperText>}
+            {errors.password && <FormHelperText>{`${errors.password.message}`}</FormHelperText>}
           </FormControl>
           
           <StyledButton

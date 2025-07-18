@@ -101,7 +101,7 @@ const Login = () => {
               {...register("email")}
               error={!!errors.email}
             />
-            {errors.email && <FormHelperText>{errors.email.message}</FormHelperText>}
+            {errors.email && <FormHelperText>{`${errors.email.message}`}</FormHelperText>}
           </FormControl>
           
           <FormControl fullWidth error={!!errors.password}>
@@ -112,7 +112,7 @@ const Login = () => {
               {...register("password")}
               error={!!errors.password}
             />
-            {errors.password && <FormHelperText>{errors.password.message}</FormHelperText>}
+            {errors.password && <FormHelperText>{`${errors.password.message}`}</FormHelperText>}
           </FormControl>
           
           <StyledButton
