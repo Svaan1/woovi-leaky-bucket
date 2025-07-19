@@ -1,8 +1,10 @@
 import { ParameterizedContext } from "koa";
-import { getDataloaders } from "../modules/loader/loaderRegister";
-import { decodeToken } from "../modules/auth/jwt";
-import { LeakyBucketService } from "../leakyBucket";
 import { fromGlobalId } from "graphql-relay";
+
+import { decodeToken } from "../modules/auth/jwt";
+import { getDataloaders } from "../modules/loader/loaderRegister";
+import { redis } from "../redis"
+import { LeakyBucketService } from "../leakyBucket";
 
 const getContext = (ctx: ParameterizedContext) => {
   const dataloaders = getDataloaders();
@@ -17,7 +19,7 @@ const getContext = (ctx: ParameterizedContext) => {
   };
 
   const leakyBucket = user
-    ? new LeakyBucketService(fromGlobalId(user.id).id, config)
+    ? new LeakyBucketService(fromGlobalId(user.id).id, config, redis)
     : null;
 
   return {
